@@ -173,12 +173,43 @@ body { font-family: 'Segoe UI', Tahoma, Arial, sans-serif; background: var(--bg)
 .footer-copy { font-size: 12px; display: flex; gap: 16px; flex-wrap: wrap; align-items: center; }
 .footer-copy a { color: rgba(255,255,255,0.6); text-decoration: none; }
 .wpp-float { position: fixed; bottom: 20px; right: 20px; background: #25D366; color: #fff; padding: 10px 18px; border-radius: 24px; font-size: 14px; font-weight: 700; text-decoration: none; display: flex; align-items: center; gap: 6px; box-shadow: 0 4px 12px rgba(0,0,0,0.2); z-index: 900; }
+/* ADMIN */
+.admin-wrap { padding: 24px; max-width: 1100px; }
+.admin-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
+.admin-header h2 { font-size: 20px; font-weight: 800; color: var(--verde); display: flex; align-items: center; gap: 8px; }
+.admin-tabs { display: flex; gap: 4px; background: var(--light); border-radius: 8px; padding: 4px; margin-bottom: 20px; border: 1px solid var(--border); }
+.admin-tab { padding: 8px 16px; border-radius: 6px; border: none; background: transparent; font-size: 13px; font-weight: 600; cursor: pointer; color: var(--muted); transition: all 0.2s; display: flex; align-items: center; gap: 5px; }
+.admin-tab.active { background: var(--verde); color: #fff; }
+.admin-stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 20px; }
+.stat-card { background: var(--white); border: 1px solid var(--border); border-radius: 8px; padding: 16px; text-align: center; }
+.stat-card .stat-n { font-size: 28px; font-weight: 800; color: var(--verde); line-height: 1; }
+.stat-card .stat-l { font-size: 12px; color: var(--muted); margin-top: 4px; font-weight: 600; }
+.admin-table { background: var(--white); border: 1px solid var(--border); border-radius: 8px; overflow: hidden; }
+.admin-table-head { display: grid; background: var(--light); border-bottom: 1px solid var(--border); padding: 10px 16px; font-size: 11px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.4px; }
+.admin-table-row { display: grid; padding: 12px 16px; border-bottom: 1px solid var(--border); align-items: center; font-size: 13px; transition: background 0.1s; }
+.admin-table-row:last-child { border-bottom: none; }
+.admin-table-row:hover { background: var(--light); }
+.admin-badge { display: inline-block; font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 10px; }
+.badge-ativo { background: #d1fae5; color: #065f46; }
+.badge-pendente { background: #fef3c7; color: #92400e; }
+.badge-inativo { background: #f1f5f9; color: #64748b; }
+.badge-rejeitado { background: #fee2e2; color: #991b1b; }
+.badge-bronze { background: #fef3c7; color: #92400e; }
+.badge-prata { background: #f1f5f9; color: #334155; }
+.badge-ouro { background: #fef9c3; color: #713f12; }
+.badge-revenda { background: #d1fae5; color: #065f46; }
+.badge-gratuito { background: #f0fdf4; color: #166534; }
+.admin-actions { display: flex; gap: 4px; }
+.btn-aprovar { background: #d1fae5; color: #065f46; border: 1px solid #6ee7b7; padding: 4px 10px; border-radius: 5px; font-size: 11px; font-weight: 700; cursor: pointer; }
+.btn-rejeitar { background: #fee2e2; color: #991b1b; border: 1px solid #fca5a5; padding: 4px 10px; border-radius: 5px; font-size: 11px; font-weight: 700; cursor: pointer; }
+.btn-excluir { background: #fee2e2; color: #991b1b; border: 1px solid #fca5a5; padding: 4px 8px; border-radius: 5px; font-size: 11px; cursor: pointer; }
 @media (max-width: 768px) {
   .hero { flex-direction: column; } .hero-badges { display: none; }
   .body-wrap { flex-direction: column; } .sidebar { width: 100%; }
   .det-wrap { flex-direction: column; } .det-right { width: 100%; }
   .planos-grid { grid-template-columns: 1fr; }
   .form-row, .form-row-3 { grid-template-columns: 1fr; }
+  .admin-stats { grid-template-columns: repeat(2, 1fr); }
 }
 </style>
 </head>
@@ -205,6 +236,7 @@ body { font-family: 'Segoe UI', Tahoma, Arial, sans-serif; background: var(--bg)
   <a id="nav-anuncie" onclick="goPage('anuncie')"><i class="ti ti-speakerphone"></i> Planos</a>
   <a id="nav-painel" onclick="requireAuth('painel')" style="display:none"><i class="ti ti-layout-dashboard"></i> Meu Painel</a>
   <a id="nav-novo-anuncio" onclick="requireAuth('novo-anuncio')" style="display:none"><i class="ti ti-plus"></i> Novo Anúncio</a>
+  <a id="nav-admin" onclick="requireAdmin()" style="display:none;background:rgba(220,38,38,0.3)"><i class="ti ti-shield"></i> Admin</a>
 </nav>
 
 <!-- HOME -->
@@ -576,6 +608,57 @@ body { font-family: 'Segoe UI', Tahoma, Arial, sans-serif; background: var(--bg)
   </div>
 </div>
 
+<!-- ADMIN -->
+<div id="page-admin" class="page">
+  <div class="admin-wrap">
+    <div class="admin-header">
+      <h2><i class="ti ti-shield"></i> Painel Administrativo</h2>
+      <button class="btn-red" onclick="sair()"><i class="ti ti-logout"></i> Sair</button>
+    </div>
+
+    <div class="admin-stats">
+      <div class="stat-card"><div class="stat-n" id="stat-anunciantes">-</div><div class="stat-l">Anunciantes</div></div>
+      <div class="stat-card"><div class="stat-n" id="stat-anuncios">-</div><div class="stat-l">Anúncios Ativos</div></div>
+      <div class="stat-card"><div class="stat-n" id="stat-pendentes">-</div><div class="stat-l">Pendentes</div></div>
+      <div class="stat-card"><div class="stat-n" id="stat-planos">-</div><div class="stat-l">Planos Pagos</div></div>
+    </div>
+
+    <div class="admin-tabs">
+      <button class="admin-tab active" onclick="adminTab('anuncios')"><i class="ti ti-speakerphone"></i> Anúncios</button>
+      <button class="admin-tab" onclick="adminTab('anunciantes')"><i class="ti ti-users"></i> Anunciantes</button>
+    </div>
+
+    <!-- ANUNCIOS ADMIN -->
+    <div id="admin-anuncios">
+      <div style="display:flex;gap:8px;margin-bottom:12px;">
+        <select id="admin-filtro-status" class="filter-select" style="width:auto" onchange="carregarAdminAnuncios()">
+          <option value="">Todos os status</option>
+          <option value="pendente">Pendentes</option>
+          <option value="ativo">Ativos</option>
+          <option value="rejeitado">Rejeitados</option>
+          <option value="inativo">Inativos</option>
+        </select>
+      </div>
+      <div class="admin-table">
+        <div class="admin-table-head" style="grid-template-columns:2fr 1fr 1fr 1fr 120px;">
+          <span>Anúncio</span><span>Tipo</span><span>Anunciante</span><span>Status</span><span>Ações</span>
+        </div>
+        <div id="admin-anuncios-lista"><div class="loading"><div class="spinner"></div><div>Carregando...</div></div></div>
+      </div>
+    </div>
+
+    <!-- ANUNCIANTES ADMIN -->
+    <div id="admin-anunciantes" style="display:none">
+      <div class="admin-table">
+        <div class="admin-table-head" style="grid-template-columns:2fr 1fr 1fr 1fr 80px;">
+          <span>Nome / Email</span><span>WhatsApp</span><span>Plano</span><span>Cadastro</span><span>Ação</span>
+        </div>
+        <div id="admin-anunciantes-lista"><div class="loading"><div class="spinner"></div><div>Carregando...</div></div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
 <!-- MODAL AUTH -->
 <div class="modal-overlay" id="modal-auth">
   <div class="modal">
@@ -796,12 +879,15 @@ async function init() {
 }
 
 function atualizarHeaderLogado() {
+  const isAdmin = usuarioAtual.email === ADMIN_EMAIL;
   document.getElementById('header-btns').innerHTML = `
     <span style="font-size:13px;color:var(--muted);font-weight:600;"><i class="ti ti-user-check"></i> ${usuarioAtual.email}</span>
+    ${isAdmin ? `<button class="btn-red" onclick="goPage('admin')" style="background:#7f1d1d"><i class="ti ti-shield"></i> Admin</button>` : ''}
     <button class="btn-outline" onclick="goPage('painel')"><i class="ti ti-layout-dashboard"></i> Meu Painel</button>
     <button class="btn-red" onclick="sair()"><i class="ti ti-logout"></i> Sair</button>`;
   document.getElementById('nav-painel').style.display = 'block';
   document.getElementById('nav-novo-anuncio').style.display = 'block';
+  document.getElementById('nav-admin').style.display = isAdmin ? 'block' : 'none';
 }
 
 function atualizarHeaderDeslogado() {
@@ -822,6 +908,7 @@ function goPage(p) {
   if (p === 'anuncios') carregarAnuncios();
   if (p === 'painel') carregarPainel();
   if (p === 'novo-anuncio') resetFormAnuncio();
+  if (p === 'admin') { carregarAdminAnuncios(); carregarAdminStats(); }
 }
 
 function requireAuth(p) {
@@ -1158,6 +1245,119 @@ async function publicarAnuncio() {
   if (error) { msg.innerHTML = `<div class="msg error">Erro: ${error.message}</div>`; return; }
   msg.innerHTML = '<div class="msg success">✅ Anúncio publicado com sucesso!</div>';
   setTimeout(() => goPage('painel'), 1500);
+}
+
+// ============================================================
+// ADMIN
+// ============================================================
+const ADMIN_EMAIL = 'shopfazenda1@gmail.com';
+
+function requireAdmin() {
+  if (!usuarioAtual) { abrirAuth('login'); return; }
+  if (usuarioAtual.email !== ADMIN_EMAIL) { alert('Acesso negado.'); return; }
+  goPage('admin');
+}
+
+function adminTab(tab) {
+  document.querySelectorAll('.admin-tab').forEach((t, i) => t.classList.toggle('active', i === (tab === 'anuncios' ? 0 : 1)));
+  document.getElementById('admin-anuncios').style.display = tab === 'anuncios' ? 'block' : 'none';
+  document.getElementById('admin-anunciantes').style.display = tab === 'anunciantes' ? 'block' : 'none';
+  if (tab === 'anunciantes') carregarAdminAnunciantes();
+  if (tab === 'anuncios') carregarAdminAnuncios();
+}
+
+async function carregarAdminStats() {
+  const [{ count: totalAnunciantes }, { count: totalAtivos }, { count: totalPendentes }, { count: totalPagos }] = await Promise.all([
+    sb.from('perfis').select('*', { count: 'exact', head: true }),
+    sb.from('anuncios').select('*', { count: 'exact', head: true }).eq('status', 'ativo'),
+    sb.from('anuncios').select('*', { count: 'exact', head: true }).eq('status', 'pendente'),
+    sb.from('perfis').select('*', { count: 'exact', head: true }).neq('tipo_plano', 'gratuito'),
+  ]);
+  document.getElementById('stat-anunciantes').textContent = totalAnunciantes || 0;
+  document.getElementById('stat-anuncios').textContent = totalAtivos || 0;
+  document.getElementById('stat-pendentes').textContent = totalPendentes || 0;
+  document.getElementById('stat-planos').textContent = totalPagos || 0;
+}
+
+async function carregarAdminAnuncios() {
+  const el = document.getElementById('admin-anuncios-lista');
+  el.innerHTML = '<div class="loading"><div class="spinner"></div><div>Carregando...</div></div>';
+  const status = document.getElementById('admin-filtro-status').value;
+  let q = sb.from('anuncios').select('*, perfis(nome, email)').order('created_at', { ascending: false });
+  if (status) q = q.eq('status', status);
+  const { data } = await q;
+  if (!data || data.length === 0) { el.innerHTML = '<div class="empty-state" style="padding:24px"><p>Nenhum anúncio encontrado.</p></div>'; return; }
+  el.innerHTML = data.map(a => {
+    const preco = a.preco ? `R$ ${Number(a.preco).toLocaleString('pt-BR')}` : '-';
+    const badgeClass = `badge-${a.status}`;
+    return `<div class="admin-table-row" style="grid-template-columns:2fr 1fr 1fr 1fr 120px;">
+      <div>
+        <div style="font-weight:700;">${a.titulo}</div>
+        <div style="font-size:11px;color:var(--muted);">${preco} · ${a.cidade}, ${a.estado}</div>
+      </div>
+      <div>${a.tipo || '-'}</div>
+      <div>
+        <div style="font-weight:600;">${a.perfis?.nome || '-'}</div>
+        <div style="font-size:11px;color:var(--muted);">${a.perfis?.email || '-'}</div>
+      </div>
+      <div><span class="admin-badge ${badgeClass}">${a.status}</span></div>
+      <div class="admin-actions">
+        ${a.status !== 'ativo' ? `<button class="btn-aprovar" onclick="adminAprovar('${a.id}')">Aprovar</button>` : ''}
+        ${a.status !== 'rejeitado' ? `<button class="btn-rejeitar" onclick="adminRejeitar('${a.id}')">Rejeitar</button>` : ''}
+        <button class="btn-excluir" onclick="adminExcluir('${a.id}')"><i class="ti ti-trash"></i></button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+async function carregarAdminAnunciantes() {
+  const el = document.getElementById('admin-anunciantes-lista');
+  el.innerHTML = '<div class="loading"><div class="spinner"></div><div>Carregando...</div></div>';
+  const { data } = await sb.from('perfis').select('*').order('created_at', { ascending: false });
+  if (!data || data.length === 0) { el.innerHTML = '<div class="empty-state" style="padding:24px"><p>Nenhum anunciante cadastrado.</p></div>'; return; }
+  el.innerHTML = data.map(p => {
+    const badgeClass = `badge-${p.tipo_plano || 'gratuito'}`;
+    const data_cad = p.created_at ? new Date(p.created_at).toLocaleDateString('pt-BR') : '-';
+    return `<div class="admin-table-row" style="grid-template-columns:2fr 1fr 1fr 1fr 80px;">
+      <div>
+        <div style="font-weight:700;">${p.nome || '-'}</div>
+        <div style="font-size:11px;color:var(--muted);">${p.email || '-'}</div>
+      </div>
+      <div>${p.whatsapp || '-'}</div>
+      <div><span class="admin-badge ${badgeClass}">${p.tipo_plano || 'gratuito'}</span></div>
+      <div style="font-size:12px;">${data_cad}</div>
+      <div>
+        <button class="btn-excluir" onclick="adminExcluirAnunciante('${p.id}')"><i class="ti ti-trash"></i></button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+async function adminAprovar(id) {
+  await sb.from('anuncios').update({ status: 'ativo' }).eq('id', id);
+  carregarAdminAnuncios();
+  carregarAdminStats();
+}
+
+async function adminRejeitar(id) {
+  await sb.from('anuncios').update({ status: 'rejeitado' }).eq('id', id);
+  carregarAdminAnuncios();
+  carregarAdminStats();
+}
+
+async function adminExcluir(id) {
+  if (!confirm('Excluir este anúncio permanentemente?')) return;
+  await sb.from('anuncios').delete().eq('id', id);
+  carregarAdminAnuncios();
+  carregarAdminStats();
+}
+
+async function adminExcluirAnunciante(id) {
+  if (!confirm('Excluir este anunciante e todos os seus anúncios?')) return;
+  await sb.from('anuncios').delete().eq('anunciante_id', id);
+  await sb.from('perfis').delete().eq('id', id);
+  carregarAdminAnunciantes();
+  carregarAdminStats();
 }
 
 // ============================================================
