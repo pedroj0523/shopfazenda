@@ -1,0 +1,1233 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ShopFazenda — Conectando Vendas para o Agronegócio</title>
+<meta name="description" content="O maior marketplace do agronegócio de Mato Grosso do Sul.">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --verde: #0e7a5a; --verde-dark: #084d38; --laranja: #e07c1a;
+  --laranja-dark: #c96a10; --bg: #f4f2ed; --white: #ffffff;
+  --border: #e0ddd6; --text: #1a1a1a; --muted: #666; --light: #f9f7f3;
+  --red: #dc2626;
+}
+body { font-family: 'Segoe UI', Tahoma, Arial, sans-serif; background: var(--bg); color: var(--text); font-size: 14px; line-height: 1.5; }
+.topbar { background: #5a2800; color: #fff; text-align: center; font-size: 12px; padding: 7px 16px; }
+.header { background: var(--white); border-bottom: 1px solid var(--border); padding: 10px 24px; height: 70px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 100; box-shadow: 0 1px 4px rgba(0,0,0,0.06); }
+.logo-area { display: flex; align-items: center; gap: 10px; cursor: pointer; }
+.logo-text { font-size: 24px; font-weight: 800; color: var(--verde); letter-spacing: -0.5px; line-height: 1; }
+.logo-text span { color: var(--laranja); }
+.logo-sub { font-size: 9px; color: var(--verde); letter-spacing: 2px; text-transform: uppercase; font-weight: 600; }
+.header-btns { display: flex; gap: 8px; align-items: center; }
+.btn-outline { border: 1.5px solid var(--verde); color: var(--verde); background: transparent; padding: 7px 14px; border-radius: 6px; font-size: 13px; cursor: pointer; font-weight: 600; display: flex; align-items: center; gap: 5px; transition: all 0.2s; }
+.btn-outline:hover { background: var(--verde); color: #fff; }
+.btn-solid { background: var(--laranja); color: #fff; border: none; padding: 7px 16px; border-radius: 6px; font-size: 13px; cursor: pointer; font-weight: 700; display: flex; align-items: center; gap: 5px; transition: background 0.2s; }
+.btn-solid:hover { background: var(--laranja-dark); }
+.btn-red { background: var(--red); color: #fff; border: none; padding: 7px 14px; border-radius: 6px; font-size: 13px; cursor: pointer; font-weight: 600; }
+.nav { background: var(--verde); display: flex; overflow-x: auto; }
+.nav a { color: rgba(255,255,255,0.88); text-decoration: none; font-size: 13px; font-weight: 600; padding: 10px 16px; display: block; white-space: nowrap; cursor: pointer; transition: background 0.15s; }
+.nav a:hover, .nav a.active { background: rgba(255,255,255,0.15); color: #fff; }
+.page { display: none; }
+.page.active { display: block; }
+.hero { background: linear-gradient(135deg, #0b6b4e 0%, var(--verde-dark) 100%); padding: 32px 24px; display: flex; align-items: center; justify-content: space-between; gap: 24px; }
+.hero-text h1 { color: #fff; font-size: 26px; font-weight: 800; line-height: 1.2; max-width: 420px; }
+.hero-text h1 span { color: #f5a623; }
+.hero-text p { color: rgba(255,255,255,0.85); font-size: 14px; margin-top: 10px; max-width: 400px; }
+.hero-badges { display: flex; gap: 10px; flex-shrink: 0; }
+.hero-badge { background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.22); border-radius: 10px; padding: 14px 18px; text-align: center; min-width: 100px; }
+.hero-badge .n { font-size: 24px; font-weight: 800; color: #f5a623; line-height: 1; }
+.hero-badge .l { font-size: 10px; color: rgba(255,255,255,0.75); text-transform: uppercase; letter-spacing: 1px; margin-top: 4px; font-weight: 600; }
+.body-wrap { display: flex; gap: 16px; padding: 16px 24px; }
+.sidebar { width: 220px; flex-shrink: 0; }
+.main-content { flex: 1; min-width: 0; }
+.card { background: var(--white); border-radius: 8px; border: 1px solid var(--border); margin-bottom: 14px; overflow: hidden; }
+.card-head { background: var(--verde); color: #fff; padding: 9px 14px; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; display: flex; align-items: center; gap: 6px; }
+.card-body { padding: 14px; }
+.filter-label { font-size: 11px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 5px; margin-top: 10px; }
+.filter-label:first-child { margin-top: 0; }
+.filter-select, .filter-input { width: 100%; padding: 7px 10px; border: 1px solid var(--border); border-radius: 5px; font-size: 13px; background: var(--light); color: var(--text); }
+.filter-btn { width: 100%; background: var(--verde); color: #fff; border: none; padding: 9px; border-radius: 5px; font-size: 13px; font-weight: 700; cursor: pointer; margin-top: 10px; }
+.anuncios-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 14px; }
+.anuncio-card { background: var(--white); border: 1px solid var(--border); border-radius: 8px; overflow: hidden; cursor: pointer; transition: box-shadow 0.2s, transform 0.15s; }
+.anuncio-card:hover { box-shadow: 0 4px 16px rgba(0,0,0,0.10); transform: translateY(-2px); }
+.anuncio-thumb { width: 100%; height: 160px; object-fit: cover; background: #eee; display: flex; align-items: center; justify-content: center; color: #bbb; font-size: 32px; }
+.anuncio-thumb img { width: 100%; height: 160px; object-fit: cover; }
+.anuncio-info { padding: 10px 12px; }
+.anuncio-tag { background: var(--laranja); color: #fff; font-size: 10px; font-weight: 700; padding: 2px 7px; border-radius: 10px; display: inline-block; margin-bottom: 5px; text-transform: uppercase; }
+.anuncio-titulo { font-size: 13px; font-weight: 700; color: var(--text); line-height: 1.3; margin-bottom: 4px; }
+.anuncio-preco { font-size: 15px; font-weight: 800; color: var(--verde); }
+.anuncio-loc { font-size: 11px; color: var(--muted); margin-top: 3px; display: flex; align-items: center; gap: 3px; }
+.anuncio-card-wrap { position: relative; }
+.destaque-badge { position: absolute; top: 8px; right: 8px; background: #f5a623; color: #fff; font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 10px; }
+.lancamento-box { background: linear-gradient(135deg, var(--laranja), var(--laranja-dark)); border-radius: 10px; padding: 20px 24px; margin-bottom: 14px; color: #fff; display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+.lancamento-box h3 { font-size: 16px; font-weight: 800; margin-bottom: 4px; }
+.lancamento-box p { font-size: 13px; opacity: 0.92; }
+.lancamento-btn { background: #fff; color: var(--laranja); border: none; padding: 9px 20px; border-radius: 6px; font-weight: 700; font-size: 13px; cursor: pointer; white-space: nowrap; }
+.empty-state { text-align: center; padding: 48px 24px; color: var(--muted); }
+.empty-state i { font-size: 48px; display: block; margin-bottom: 12px; color: #ccc; }
+.loading { text-align: center; padding: 32px; color: var(--muted); }
+.spinner { display: inline-block; width: 24px; height: 24px; border: 3px solid var(--border); border-top-color: var(--verde); border-radius: 50%; animation: spin 0.8s linear infinite; margin-bottom: 8px; }
+@keyframes spin { to { transform: rotate(360deg); } }
+.modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center; }
+.modal-overlay.open { display: flex; }
+.modal { background: var(--white); border-radius: 12px; padding: 32px; width: 100%; max-width: 420px; position: relative; max-height: 90vh; overflow-y: auto; }
+.modal h2 { font-size: 20px; font-weight: 800; color: var(--verde); margin-bottom: 6px; }
+.modal p { color: var(--muted); font-size: 13px; margin-bottom: 20px; }
+.modal-close { position: absolute; top: 14px; right: 16px; background: none; border: none; font-size: 20px; cursor: pointer; color: var(--muted); }
+.form-group { margin-bottom: 14px; }
+.form-group label { display: block; font-size: 12px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.4px; margin-bottom: 5px; }
+.form-group input, .form-group select, .form-group textarea { width: 100%; padding: 9px 12px; border: 1.5px solid var(--border); border-radius: 6px; font-size: 13px; color: var(--text); transition: border-color 0.2s; background: var(--white); }
+.form-group input:focus, .form-group select:focus, .form-group textarea:focus { outline: none; border-color: var(--verde); }
+.form-group textarea { resize: vertical; min-height: 80px; }
+.form-group select:disabled { background: #f0f0f0; color: #aaa; cursor: not-allowed; }
+.form-submit { width: 100%; background: var(--verde); color: #fff; border: none; padding: 11px; border-radius: 6px; font-size: 14px; font-weight: 700; cursor: pointer; transition: background 0.2s; }
+.form-submit:hover { background: var(--verde-dark); }
+.form-submit:disabled { opacity: 0.6; cursor: not-allowed; }
+.auth-toggle { text-align: center; margin-top: 14px; font-size: 13px; color: var(--muted); }
+.auth-toggle a { color: var(--verde); font-weight: 600; cursor: pointer; }
+.msg { padding: 10px 14px; border-radius: 6px; font-size: 13px; margin-bottom: 14px; }
+.msg.error { background: #fee2e2; color: #991b1b; border: 1px solid #fca5a5; }
+.msg.success { background: #d1fae5; color: #065f46; border: 1px solid #6ee7b7; }
+.painel-wrap { padding: 24px; max-width: 900px; }
+.painel-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
+.painel-header h2 { font-size: 20px; font-weight: 800; color: var(--verde); }
+.meus-anuncios-grid { display: grid; gap: 12px; }
+.meu-anuncio-item { background: var(--white); border: 1px solid var(--border); border-radius: 8px; padding: 14px 16px; display: flex; align-items: center; gap: 14px; }
+.meu-anuncio-thumb { width: 70px; height: 55px; border-radius: 5px; background: #eee; flex-shrink: 0; display: flex; align-items: center; justify-content: center; color: #ccc; font-size: 20px; overflow: hidden; }
+.meu-anuncio-thumb img { width: 100%; height: 100%; object-fit: cover; }
+.meu-anuncio-info { flex: 1; min-width: 0; }
+.meu-anuncio-titulo { font-size: 14px; font-weight: 700; color: var(--text); margin-bottom: 3px; }
+.meu-anuncio-preco { font-size: 13px; font-weight: 700; color: var(--verde); }
+.meu-anuncio-status { display: inline-block; font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 10px; margin-left: 6px; }
+.status-ativo { background: #d1fae5; color: #065f46; }
+.status-pendente { background: #fef3c7; color: #92400e; }
+.status-inativo { background: #f1f5f9; color: #64748b; }
+.meu-anuncio-actions { display: flex; gap: 6px; flex-shrink: 0; }
+.btn-sm { padding: 5px 10px; border-radius: 5px; font-size: 12px; font-weight: 600; cursor: pointer; border: 1.5px solid var(--border); background: var(--white); color: var(--text); }
+.btn-sm:hover { border-color: var(--verde); color: var(--verde); }
+.btn-sm.danger:hover { border-color: var(--red); color: var(--red); }
+.form-anuncio { background: var(--white); border: 1px solid var(--border); border-radius: 10px; padding: 24px; }
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.form-row-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; }
+.form-section-title { font-size: 13px; font-weight: 700; color: var(--verde); text-transform: uppercase; letter-spacing: 0.5px; padding-bottom: 8px; border-bottom: 2px solid var(--border); margin-bottom: 14px; margin-top: 20px; }
+.form-section-title:first-child { margin-top: 0; }
+.foto-upload-area { border: 2px dashed var(--border); border-radius: 8px; padding: 24px; text-align: center; cursor: pointer; transition: border-color 0.2s; background: var(--light); }
+.foto-upload-area:hover { border-color: var(--verde); }
+.foto-upload-area i { font-size: 32px; color: #bbb; display: block; margin-bottom: 8px; }
+.foto-preview-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(90px, 1fr)); gap: 8px; margin-top: 12px; }
+.foto-preview { position: relative; }
+.foto-preview img { width: 100%; height: 70px; object-fit: cover; border-radius: 5px; border: 1px solid var(--border); }
+.foto-remove { position: absolute; top: -5px; right: -5px; background: var(--red); color: #fff; border: none; border-radius: 50%; width: 18px; height: 18px; font-size: 11px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+.campo-oculto { display: none; }
+.det-wrap { padding: 20px 24px; display: flex; gap: 20px; }
+.det-left { flex: 1; min-width: 0; }
+.det-right { width: 300px; flex-shrink: 0; }
+.det-main-photo { width: 100%; height: 320px; object-fit: cover; border-radius: 8px; cursor: pointer; }
+.det-thumbs { display: flex; gap: 8px; margin-top: 8px; overflow-x: auto; }
+.det-thumbs img { width: 70px; height: 55px; object-fit: cover; border-radius: 5px; cursor: pointer; border: 2px solid transparent; flex-shrink: 0; }
+.det-specs h3 { font-size: 14px; font-weight: 700; margin-bottom: 10px; display: flex; align-items: center; gap: 6px; }
+.spec-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.spec-item { background: var(--light); border-radius: 6px; padding: 8px 12px; }
+.spec-label { font-size: 10px; color: var(--muted); text-transform: uppercase; font-weight: 600; letter-spacing: 0.4px; }
+.spec-val { font-size: 13px; font-weight: 700; color: var(--text); margin-top: 2px; }
+.det-desc { margin-top: 16px; }
+.det-desc h3 { font-size: 14px; font-weight: 700; margin-bottom: 8px; display: flex; align-items: center; gap: 6px; }
+.det-desc p { color: var(--muted); font-size: 13px; line-height: 1.7; }
+.price-card { background: var(--white); border: 1px solid var(--border); border-radius: 8px; padding: 16px; margin-bottom: 12px; }
+.price-card h2 { font-size: 15px; font-weight: 700; margin-bottom: 4px; }
+.big-price { font-size: 24px; font-weight: 800; color: var(--verde); margin: 8px 0; }
+.loc-line { font-size: 12px; color: var(--muted); display: flex; align-items: center; gap: 4px; margin-bottom: 12px; }
+.wpp-btn { width: 100%; background: #25D366; color: #fff; border: none; padding: 11px; border-radius: 6px; font-size: 14px; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; margin-bottom: 8px; }
+.tel-btn { width: 100%; background: var(--light); border: 1.5px solid var(--border); color: var(--text); padding: 9px; border-radius: 6px; font-size: 13px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; }
+.anunc-card { background: var(--white); border: 1px solid var(--border); border-radius: 8px; padding: 14px; margin-bottom: 12px; }
+.anunc-card h4 { font-size: 11px; color: var(--muted); text-transform: uppercase; font-weight: 700; letter-spacing: 0.4px; margin-bottom: 8px; }
+.anunc-name { font-size: 14px; font-weight: 700; }
+.anunc-loc { font-size: 12px; color: var(--muted); margin-top: 3px; display: flex; align-items: center; gap: 3px; }
+.safety-box { background: #fffbeb; border: 1px solid #fde68a; border-radius: 8px; padding: 12px 14px; font-size: 12px; color: #78350f; line-height: 1.5; }
+.prod-tag { background: var(--laranja); color: #fff; font-size: 11px; font-weight: 700; padding: 3px 10px; border-radius: 10px; display: inline-block; margin-bottom: 6px; }
+.anuncie-wrap { padding: 24px; max-width: 900px; margin: 0 auto; }
+.anuncie-hero { text-align: center; padding: 28px; background: linear-gradient(135deg, var(--verde), var(--verde-dark)); border-radius: 10px; color: #fff; margin-bottom: 24px; }
+.anuncie-hero h2 { font-size: 22px; font-weight: 800; margin-bottom: 6px; }
+.planos-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 24px; }
+.plano { background: var(--white); border: 2px solid var(--border); border-radius: 10px; padding: 20px; position: relative; }
+.plano.destaque { border-color: var(--verde); }
+.plano-badge { background: var(--verde); color: #fff; font-size: 11px; font-weight: 700; padding: 3px 10px; border-radius: 10px; position: absolute; top: -12px; left: 50%; transform: translateX(-50%); white-space: nowrap; }
+.plano h3 { font-size: 16px; font-weight: 800; margin-bottom: 4px; }
+.preco { font-size: 28px; font-weight: 800; color: var(--verde); margin: 8px 0 2px; }
+.periodo { font-size: 12px; color: var(--muted); margin-bottom: 14px; }
+.plano ul { list-style: none; margin-bottom: 16px; }
+.plano ul li { font-size: 13px; padding: 4px 0; display: flex; align-items: center; gap: 6px; }
+.plano ul li i { color: var(--verde); font-size: 14px; }
+.plano-btn { width: 100%; background: var(--verde); color: #fff; border: none; padding: 10px; border-radius: 6px; font-size: 13px; font-weight: 700; cursor: pointer; }
+#lightbox { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.92); z-index: 2000; align-items: center; justify-content: center; flex-direction: column; }
+#lightbox img { max-width: 90vw; max-height: 80vh; object-fit: contain; border-radius: 6px; }
+#lightbox-count { color: rgba(255,255,255,0.7); font-size: 13px; margin-top: 12px; }
+.lightbox-controls { display: flex; gap: 12px; margin-top: 12px; }
+#lightbox-close { position: fixed; top: 20px; right: 24px; background: none; border: none; color: #fff; font-size: 28px; cursor: pointer; }
+.footer { background: var(--verde-dark); color: rgba(255,255,255,0.7); padding: 20px 24px; margin-top: 32px; }
+.footer-brand { font-size: 18px; font-weight: 800; color: #fff; margin-bottom: 6px; }
+.footer-copy { font-size: 12px; display: flex; gap: 16px; flex-wrap: wrap; align-items: center; }
+.footer-copy a { color: rgba(255,255,255,0.6); text-decoration: none; }
+.wpp-float { position: fixed; bottom: 20px; right: 20px; background: #25D366; color: #fff; padding: 10px 18px; border-radius: 24px; font-size: 14px; font-weight: 700; text-decoration: none; display: flex; align-items: center; gap: 6px; box-shadow: 0 4px 12px rgba(0,0,0,0.2); z-index: 900; }
+@media (max-width: 768px) {
+  .hero { flex-direction: column; } .hero-badges { display: none; }
+  .body-wrap { flex-direction: column; } .sidebar { width: 100%; }
+  .det-wrap { flex-direction: column; } .det-right { width: 100%; }
+  .planos-grid { grid-template-columns: 1fr; }
+  .form-row, .form-row-3 { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<div class="topbar">⚠️ Não solicitamos nenhum código de verificação por WhatsApp, SMS ou telefone. Cuidado com golpes!</div>
+
+<div class="header">
+  <div class="logo-area" onclick="goPage('home')">
+    <div>
+      <div class="logo-text">Shop<span>Fazenda</span></div>
+      <div class="logo-sub">Conectando Vendas para o Agronegócio</div>
+    </div>
+  </div>
+  <div class="header-btns" id="header-btns">
+    <button class="btn-outline" onclick="abrirAuth('login')"><i class="ti ti-user"></i> Área do Anunciante</button>
+    <button class="btn-solid" onclick="abrirAuth('cadastro')"><i class="ti ti-speakerphone"></i> Anuncie Grátis</button>
+  </div>
+</div>
+
+<nav class="nav">
+  <a id="nav-home" class="active" onclick="goPage('home')"><i class="ti ti-home"></i> Página Inicial</a>
+  <a id="nav-anuncios" onclick="goPage('anuncios')"><i class="ti ti-tractor"></i> Anúncios</a>
+  <a id="nav-anuncie" onclick="goPage('anuncie')"><i class="ti ti-speakerphone"></i> Planos</a>
+  <a id="nav-painel" onclick="requireAuth('painel')" style="display:none"><i class="ti ti-layout-dashboard"></i> Meu Painel</a>
+  <a id="nav-novo-anuncio" onclick="requireAuth('novo-anuncio')" style="display:none"><i class="ti ti-plus"></i> Novo Anúncio</a>
+</nav>
+
+<!-- HOME -->
+<div id="page-home" class="page active">
+  <div class="hero">
+    <div class="hero-text">
+      <h1>O marketplace do <span>agronegócio</span> de Mato Grosso do Sul</h1>
+      <p>Compre e venda tratores, colheitadeiras, implementos e muito mais com segurança e rapidez.</p>
+    </div>
+    <div class="hero-badges">
+      <div class="hero-badge"><div class="n">MS</div><div class="l">Foco Regional</div></div>
+      <div class="hero-badge"><div class="n">100%</div><div class="l">Agronegócio</div></div>
+      <div class="hero-badge"><div class="n">0</div><div class="l">Custo pra Buscar</div></div>
+    </div>
+  </div>
+  <div class="body-wrap">
+    <div class="sidebar">
+      <div class="card">
+        <div class="card-head"><i class="ti ti-search"></i> Buscar</div>
+        <div class="card-body">
+          <div class="filter-label">Tipo</div>
+          <select class="filter-select" id="f-tipo" onchange="atualizarFiltroMarca('f-marca','f-tipo')">
+            <option value="">Todos</option>
+            <option>Trator</option><option>Colheitadeira</option><option>Implemento Agrícola</option>
+            <option>Pá Carregadeira</option><option>Escavadeira</option><option>Plataforma</option>
+            <option>Quadriciclo / UTV</option><option>Imóvel Rural</option>
+          </select>
+          <div class="filter-label">Marca</div>
+          <select class="filter-select" id="f-marca"><option value="">Todas</option></select>
+          <div class="filter-label">Cidade</div>
+          <input class="filter-input" id="f-cidade" placeholder="Ex: Campo Grande">
+          <div class="filter-label">Preço máximo</div>
+          <input class="filter-input" id="f-preco" type="number" placeholder="Ex: 500000">
+          <button class="filter-btn" onclick="buscarAnuncios()"><i class="ti ti-search"></i> Buscar</button>
+        </div>
+      </div>
+    </div>
+    <div class="main-content">
+      <div class="lancamento-box">
+        <div>
+          <h3>🚀 Lançamento ShopFazenda — Anuncie Grátis por 3 meses!</h3>
+          <p>Os primeiros anunciantes não pagam nada por 3 meses. Aproveite e garanta seu espaço!</p>
+        </div>
+        <button class="lancamento-btn" onclick="abrirAuth('cadastro')">Quero Anunciar Agora</button>
+      </div>
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
+        <h3 style="font-size:15px;font-weight:700;">⭐ Produtos em Destaque</h3>
+        <a onclick="goPage('anuncios')" style="font-size:13px;color:var(--verde);cursor:pointer;font-weight:600;">Ver todos →</a>
+      </div>
+      <div id="home-anuncios"><div class="loading"><div class="spinner"></div><div>Carregando anúncios...</div></div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ANUNCIOS -->
+<div id="page-anuncios" class="page">
+  <div class="body-wrap">
+    <div class="sidebar">
+      <div class="card">
+        <div class="card-head"><i class="ti ti-search"></i> Filtrar</div>
+        <div class="card-body">
+          <div class="filter-label">Tipo</div>
+          <select class="filter-select" id="f2-tipo" onchange="atualizarFiltroMarca('f2-marca','f2-tipo')">
+            <option value="">Todos</option>
+            <option>Trator</option><option>Colheitadeira</option><option>Implemento Agrícola</option>
+            <option>Pá Carregadeira</option><option>Escavadeira</option><option>Plataforma</option>
+            <option>Quadriciclo / UTV</option><option>Imóvel Rural</option>
+          </select>
+          <div class="filter-label">Marca</div>
+          <select class="filter-select" id="f2-marca"><option value="">Todas</option></select>
+          <div class="filter-label">Cidade</div>
+          <input class="filter-input" id="f2-cidade" placeholder="Ex: Campo Grande">
+          <div class="filter-label">Preço máximo</div>
+          <input class="filter-input" id="f2-preco" type="number" placeholder="Ex: 500000">
+          <button class="filter-btn" onclick="buscarAnuncios2()"><i class="ti ti-search"></i> Filtrar</button>
+        </div>
+      </div>
+    </div>
+    <div class="main-content">
+      <h2 style="font-size:18px;font-weight:800;margin-bottom:14px;color:var(--verde);">Todos os Anúncios</h2>
+      <div id="lista-anuncios"><div class="loading"><div class="spinner"></div><div>Carregando...</div></div></div>
+    </div>
+  </div>
+</div>
+
+<!-- DETALHE -->
+<div id="page-detalhe" class="page">
+  <div id="detalhe-content"></div>
+</div>
+
+<!-- PLANOS -->
+<div id="page-anuncie" class="page">
+  <div class="anuncie-wrap">
+    <div class="anuncie-hero">
+      <h2>Anuncie no ShopFazenda</h2>
+      <p>Alcance produtores rurais e compradores de MS e todo o Brasil.<br>Os primeiros anunciantes têm <strong>3 meses GRÁTIS</strong>!</p>
+    </div>
+
+    <div id="planos-msg" style="margin-bottom:14px;"></div>
+
+    <div class="planos-grid" style="grid-template-columns:repeat(4,1fr);">
+      <div class="plano">
+        <h3>Bronze</h3>
+        <div class="preco">R$ 79</div>
+        <div class="periodo">30 dias · 1 anúncio</div>
+        <ul>
+          <li><i class="ti ti-check"></i> 1 anúncio ativo</li>
+          <li><i class="ti ti-check"></i> 10 fotos por anúncio</li>
+          <li><i class="ti ti-check"></i> Contato via WhatsApp</li>
+          <li><i class="ti ti-check"></i> Listagem padrão</li>
+          <li><i class="ti ti-check"></i> Pague 1x ou 2x</li>
+        </ul>
+        <button class="plano-btn" onclick="assinarPlano('bronze')">Anunciar Agora</button>
+      </div>
+      <div class="plano">
+        <h3>Prata</h3>
+        <div class="preco">R$ 149</div>
+        <div class="periodo">60 dias · 3 anúncios</div>
+        <ul>
+          <li><i class="ti ti-check"></i> 3 anúncios ativos</li>
+          <li><i class="ti ti-check"></i> 10 fotos por anúncio</li>
+          <li><i class="ti ti-check"></i> Contato via WhatsApp</li>
+          <li><i class="ti ti-check"></i> Listagem padrão</li>
+          <li><i class="ti ti-check"></i> Pague 1x ou 3x</li>
+        </ul>
+        <button class="plano-btn" onclick="assinarPlano('prata')">Anunciar Agora</button>
+      </div>
+      <div class="plano destaque">
+        <div class="plano-badge">Mais Popular</div>
+        <h3>Ouro</h3>
+        <div class="preco">R$ 249</div>
+        <div class="periodo">120 dias · 10 anúncios</div>
+        <ul>
+          <li><i class="ti ti-check"></i> 10 anúncios ativos</li>
+          <li><i class="ti ti-check"></i> 20 fotos por anúncio</li>
+          <li><i class="ti ti-check"></i> Destaque na listagem</li>
+          <li><i class="ti ti-check"></i> Relatório de acessos</li>
+          <li><i class="ti ti-check"></i> Pague 1x ou 3x</li>
+        </ul>
+        <button class="plano-btn" onclick="assinarPlano('ouro')">Anunciar Agora</button>
+      </div>
+      <div class="plano">
+        <h3>Revenda</h3>
+        <div class="preco">R$ 349</div>
+        <div class="periodo">180 dias · Ilimitado</div>
+        <ul>
+          <li><i class="ti ti-check"></i> Anúncios ilimitados</li>
+          <li><i class="ti ti-check"></i> Fotos ilimitadas</li>
+          <li><i class="ti ti-check"></i> Topo da listagem</li>
+          <li><i class="ti ti-check"></i> Página da revenda</li>
+          <li><i class="ti ti-check"></i> Pague 1x ou 3x</li>
+        </ul>
+        <button class="plano-btn" onclick="assinarPlano('revenda')">Anunciar Agora</button>
+      </div>
+    </div>
+
+    <div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:8px;padding:16px 20px;margin-top:8px;font-size:13px;color:#166534;">
+      <strong>🔒 Pagamento seguro via Mercado Pago</strong> — Cartão de crédito em até 3x ou Pix à vista. Seus dados são protegidos.
+    </div>
+  </div>
+</div>
+
+<!-- PAINEL -->
+<div id="page-painel" class="page">
+  <div class="painel-wrap">
+    <div class="painel-header">
+      <div>
+        <h2>Meu Painel</h2>
+        <p id="painel-welcome" style="color:var(--muted);font-size:13px;margin-top:2px;"></p>
+      </div>
+      <div style="display:flex;gap:8px;">
+        <button class="btn-solid" onclick="goPage('novo-anuncio')"><i class="ti ti-plus"></i> Novo Anúncio</button>
+        <button class="btn-red" onclick="sair()"><i class="ti ti-logout"></i> Sair</button>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-head"><i class="ti ti-speakerphone"></i> Meus Anúncios</div>
+      <div class="card-body" id="meus-anuncios-lista"><div class="loading"><div class="spinner"></div><div>Carregando...</div></div></div>
+    </div>
+  </div>
+</div>
+
+<!-- NOVO ANUNCIO -->
+<div id="page-novo-anuncio" class="page">
+  <div class="painel-wrap">
+    <div class="painel-header">
+      <h2 id="form-titulo-pg">Novo Anúncio</h2>
+      <button class="btn-outline" onclick="goPage('painel')"><i class="ti ti-arrow-left"></i> Voltar</button>
+    </div>
+    <div class="form-anuncio">
+      <input type="hidden" id="edit-anuncio-id">
+
+      <div class="form-section-title">Informações do Equipamento</div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Tipo *</label>
+          <select id="an-tipo" onchange="onTipoChange()" required>
+            <option value="">Selecione o tipo...</option>
+            <option>Trator</option>
+            <option>Colheitadeira</option>
+            <option>Implemento Agrícola</option>
+            <option>Pá Carregadeira</option>
+            <option>Escavadeira</option>
+            <option>Plataforma</option>
+            <option>Quadriciclo / UTV</option>
+            <option>Imóvel Rural</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Título do Anúncio *</label>
+          <input type="text" id="an-titulo" placeholder="Ex: Trator John Deere 5078E 2020">
+        </div>
+      </div>
+
+      <!-- CAMPOS EQUIPAMENTO -->
+      <div id="campos-equipamento">
+        <div class="form-row">
+          <div class="form-group">
+            <label>Marca *</label>
+            <select id="an-marca" onchange="onMarcaChange()" disabled>
+              <option value="">Selecione o tipo primeiro</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Modelo *</label>
+            <select id="an-modelo" disabled>
+              <option value="">Selecione a marca primeiro</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-row-3">
+          <div class="form-group">
+            <label>Ano de Fabricação</label>
+            <select id="an-ano">
+              <option value="">Selecione</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Preço (R$) *</label>
+            <input type="number" id="an-preco" placeholder="Ex: 250000">
+          </div>
+          <div class="form-group">
+            <label>Conservação</label>
+            <select id="an-conservacao">
+              <option value="">Selecione</option>
+              <option>Novo (0 km)</option>
+              <option>Seminovo</option>
+              <option>Usado - Bom Estado</option>
+              <option>Usado - Aceita Reparos</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Horímetro / Km</label>
+            <input type="text" id="an-horimetro" placeholder="Ex: 1.500 horas ou 45.000 km">
+          </div>
+          <div class="form-group">
+            <label>Tração</label>
+            <select id="an-tracao">
+              <option value="">Selecione</option>
+              <option>2x2</option><option>4x2</option><option>4x4</option><option>Esteira</option><option>Não se aplica</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <!-- CAMPOS IMÓVEL RURAL -->
+      <div id="campos-imovel" class="campo-oculto">
+        <div class="form-row">
+          <div class="form-group">
+            <label>Tipo de Imóvel *</label>
+            <select id="an-tipo-imovel">
+              <option value="">Selecione</option>
+              <option>Fazenda</option><option>Sítio</option><option>Chácara</option>
+              <option>Granja</option><option>Área Rural</option><option>Rancho</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Área (hectares) *</label>
+            <input type="number" id="an-hectares" placeholder="Ex: 500">
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Preço (R$) *</label>
+            <input type="number" id="an-preco-imovel" placeholder="Ex: 2500000">
+          </div>
+          <div class="form-group">
+            <label>Tipo de Solo</label>
+            <select id="an-solo">
+              <option value="">Selecione</option>
+              <option>Arenoso</option><option>Argiloso</option><option>Misto</option><option>Latossolo</option><option>Outro</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Aptidão</label>
+            <select id="an-aptidao">
+              <option value="">Selecione</option>
+              <option>Lavoura</option><option>Pecuária</option><option>Misto (Lavoura e Pecuária)</option>
+              <option>Reflorestamento</option><option>Outro</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Infraestrutura</label>
+            <select id="an-infraestrutura">
+              <option value="">Selecione</option>
+              <option>Sede, curral e galpão</option><option>Sede e galpão</option>
+              <option>Apenas sede</option><option>Sem benfeitorias</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-section-title">Localização e Contato</div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Cidade *</label>
+          <input type="text" id="an-cidade" placeholder="Ex: Campo Grande">
+        </div>
+        <div class="form-group">
+          <label>Estado</label>
+          <select id="an-estado">
+            <option value="MS" selected>MS</option><option value="MT">MT</option>
+            <option value="GO">GO</option><option value="PR">PR</option>
+            <option value="SP">SP</option><option value="MG">MG</option>
+            <option value="BA">BA</option><option value="Outro">Outro</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>WhatsApp *</label>
+          <input type="text" id="an-whatsapp" placeholder="(67) 99999-9999">
+        </div>
+        <div class="form-group">
+          <label>Telefone</label>
+          <input type="text" id="an-telefone" placeholder="(67) 3333-4444">
+        </div>
+      </div>
+
+      <div class="form-section-title">Descrição</div>
+      <div class="form-group">
+        <label>Descrição detalhada *</label>
+        <textarea id="an-descricao" rows="4" placeholder="Informe detalhes adicionais, histórico de manutenção, acessórios incluídos..."></textarea>
+      </div>
+
+      <div class="form-section-title">Fotos</div>
+      <div class="foto-upload-area" onclick="document.getElementById('foto-input').click()">
+        <i class="ti ti-photo-plus"></i>
+        <p style="font-size:13px;color:var(--muted);">Clique para adicionar fotos<br><small>Máximo 10 fotos • JPG, PNG</small></p>
+        <input type="file" id="foto-input" multiple accept="image/*" style="display:none" onchange="previewFotos(this)">
+      </div>
+      <div class="foto-preview-grid" id="foto-preview-grid"></div>
+      <div id="upload-progress" style="display:none;margin-top:10px;">
+        <div style="background:var(--border);border-radius:4px;height:6px;">
+          <div id="progress-bar" style="background:var(--verde);height:6px;border-radius:4px;width:0%;transition:width 0.3s;"></div>
+        </div>
+        <p style="font-size:12px;color:var(--muted);margin-top:4px;" id="progress-text">Enviando fotos...</p>
+      </div>
+
+      <div id="form-msg" style="margin-top:14px;"></div>
+      <button class="form-submit" id="btn-publicar" onclick="publicarAnuncio()" style="margin-top:14px;">
+        <i class="ti ti-check"></i> Publicar Anúncio
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL AUTH -->
+<div class="modal-overlay" id="modal-auth">
+  <div class="modal">
+    <button class="modal-close" onclick="fecharAuth()">×</button>
+    <div id="modal-login">
+      <h2>Entrar na sua conta</h2>
+      <p>Acesse o painel para gerenciar seus anúncios</p>
+      <div id="login-msg"></div>
+      <div class="form-group"><label>Email</label><input type="email" id="login-email" placeholder="seu@email.com"></div>
+      <div class="form-group"><label>Senha</label><input type="password" id="login-senha" placeholder="••••••••"></div>
+      <button class="form-submit" id="btn-login" onclick="fazerLogin()">Entrar</button>
+      <div class="auth-toggle">Não tem conta? <a onclick="trocarAuth('cadastro')">Cadastre-se grátis</a></div>
+    </div>
+    <div id="modal-cadastro" style="display:none">
+      <h2>Criar sua conta</h2>
+      <p>Anuncie grátis por 3 meses no lançamento!</p>
+      <div id="cadastro-msg"></div>
+      <div class="form-group"><label>Seu Nome *</label><input type="text" id="cad-nome" placeholder="João da Silva"></div>
+      <div class="form-group"><label>Email *</label><input type="email" id="cad-email" placeholder="seu@email.com"></div>
+      <div class="form-group"><label>WhatsApp *</label><input type="text" id="cad-wpp" placeholder="(67) 99999-9999"></div>
+      <div class="form-group"><label>Senha *</label><input type="password" id="cad-senha" placeholder="Mínimo 6 caracteres"></div>
+      <button class="form-submit" id="btn-cadastro" onclick="fazerCadastro()">Criar Conta Grátis</button>
+      <div class="auth-toggle">Já tem conta? <a onclick="trocarAuth('login')">Entrar</a></div>
+    </div>
+  </div>
+</div>
+
+<!-- LIGHTBOX -->
+<div id="lightbox" onclick="fecharLightbox()">
+  <button id="lightbox-close" onclick="fecharLightbox()">×</button>
+  <img id="lightbox-img" src="" alt="">
+  <div id="lightbox-count"></div>
+  <div class="lightbox-controls" onclick="event.stopPropagation()">
+    <button onclick="prevPhoto()" style="background:rgba(255,255,255,0.15);border:none;color:#fff;padding:8px 18px;border-radius:6px;cursor:pointer;font-size:18px;">‹</button>
+    <button onclick="nextPhoto()" style="background:rgba(255,255,255,0.15);border:none;color:#fff;padding:8px 18px;border-radius:6px;cursor:pointer;font-size:18px;">›</button>
+  </div>
+</div>
+
+<div class="footer">
+  <div class="footer-brand">ShopFazenda</div>
+  <div class="footer-copy">
+    © 2025 ShopFazenda — Conectando vendas para o Agronegócio · Campo Grande, MS
+    <a href="#">Privacidade</a> <a href="#">Termos de Uso</a>
+    <a href="tel:5567999016362">(67) 99901-6362</a>
+  </div>
+</div>
+
+<a class="wpp-float" href="https://wa.me/5567999016362?text=Olá! Tenho interesse no ShopFazenda!" target="_blank">
+  <i class="ti ti-brand-whatsapp"></i> WhatsApp
+</a>
+
+<script>
+const SUPABASE_URL = 'https://jpgmfbcashzdxcfddcbg.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_jO_8e2VsTGJ-z7wM8t177A_L25LQ8hk';
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+let usuarioAtual = null;
+let fotosUpload = [];
+let fotosUrls = [];
+let lightboxFotos = [];
+let lightboxIdx = 0;
+
+// ============================================================
+// CATÁLOGO DE MARCAS E MODELOS
+// ============================================================
+const CATALOGO = {
+  'Trator': {
+    'John Deere': ['5055E','5078E','5090E','5100E','6110J','6130J','6150J','6195J','7215R','7230R','8245R','8295R'],
+    'Massey Ferguson': ['4265','4275','4283','4291','5710S','5711S','6713S','7719S','7722S','8730S'],
+    'New Holland': ['TB110','TL5.100','T6.140','T6.180','T7.210','T7.260','TM7010','TM7030'],
+    'Valmet / AGCO': ['685','785','885','985','BM100','BM110','BM120','BM125'],
+    'Case IH': ['Farmall 75C','Farmall 95C','Farmall 110C','Puma 150','Puma 185','Puma 220','Magnum 250'],
+    'Fendt': ['311 Vario','514 Vario','720 Vario','818 Vario','930 Vario','1050 Vario'],
+    'Kubota': ['B2420','L3408','L4508','M5091','M7151','M108S'],
+    'Deutz-Fahr': ['5080G','5090G','6160G','6180G','7250 TTV','9340 TTV'],
+    'LS Tractor': ['MT3.35','MT3.50','MT3.60','MT5.73','MT5.85','XR50'],
+    'Branson': ['2505','3520','4720','5820','6530'],
+  },
+  'Colheitadeira': {
+    'John Deere': ['S560','S670','S680','S690','STS9500','STS9600','X9 1000','X9 1100'],
+    'Case IH': ['Axial-Flow 6150','Axial-Flow 7150','Axial-Flow 8150','Axial-Flow 9120','Axial-Flow 9230'],
+    'New Holland': ['CR6.90','CR7.90','CR8.90','CR9.90','CX8.80','CX8.85','TC5080'],
+    'Massey Ferguson': ['Beta 265','Beta 275','Ideal 7','Ideal 8','Ideal 9','9790','9895'],
+    'Gleaner': ['S68','S78','S88','A86','A96'],
+    'Claas': ['Lexion 750','Lexion 770','Lexion 8900','Tucano 450','Tucano 560'],
+  },
+  'Implemento Agrícola': {
+    'Baldan': ['Grade Aradora','Subsolador','Arado','Plantadeira','Cultivador'],
+    'Marchesan': ['Plantadeira','Semeadora','Subsolador','Grade Niveladora','Sulcador'],
+    'Stara': ['Plantadeira Absoluta','Semeadora Hércules','Pulverizador Arbus','Distribuidor Reboke'],
+    'Vence Tudo': ['Grade Aradora','Grade Niveladora','Arado de Disco','Subsolador'],
+    'Tatu Marchezan': ['Grade Aradora','Subsolador','Arado','Plantadeira'],
+    'Jumil': ['Plantadeira','Semeadora','Sulcador','Adubador'],
+    'Jacto': ['Pulverizador','Atomizador','Espalhador','Distribuidor'],
+    'Outro': ['Outro modelo'],
+  },
+  'Pá Carregadeira': {
+    'Caterpillar': ['906','910','914','924','930','938','950','966','972','980','988','990','992','994'],
+    'Komatsu': ['WA150','WA200','WA250','WA320','WA380','WA430','WA470','WA480','WA500','WA600'],
+    'Case': ['521F','621F','721F','821F','921F','1021F','1121F'],
+    'Volvo': ['L60H','L70H','L90H','L110H','L120H','L150H','L180H','L220H','L250H','L350H'],
+    'John Deere': ['444K','524K','544K','624K','644K','724K','824K','844K'],
+    'Liebherr': ['L506','L507','L509','L514','L518','L520','L522','L524','L526','L528'],
+  },
+  'Escavadeira': {
+    'Caterpillar': ['305','308','311','313','315','318','320','323','330','336','349','374','390','395'],
+    'Komatsu': ['PC35','PC50','PC88','PC130','PC160','PC200','PC228','PC290','PC360','PC400','PC490','PC650'],
+    'Volvo': ['ECR25','EC55','EC80','EC140','EC200','EC220','EC250','EC300','EC350','EC380','EC480','EC750'],
+    'Doosan': ['DX35','DX55','DX80','DX140','DX180','DX225','DX255','DX300','DX340','DX380','DX420','DX480'],
+    'Case': ['CX57','CX75','CX80','CX130','CX145','CX160','CX180','CX210','CX245','CX290','CX350','CX470'],
+    'Hitachi': ['ZX35','ZX55','ZX85','ZX130','ZX200','ZX210','ZX250','ZX290','ZX350','ZX450','ZX490','ZX650'],
+  },
+  'Plataforma': {
+    'John Deere': ['600F 20p','600F 25p','600F 30p','600F 35p','600F 40p','700FD 20p','700FD 25p','700FD 30p'],
+    'Case IH': ['3020 20p','3020 25p','3020 30p','3020 35p','4020 20p','4020 25p','4020 30p'],
+    'New Holland': ['Varifeed 25p','Varifeed 30p','Varifeed 35p','Varifeed 40p','993 20p','993 25p'],
+    'Massey Ferguson': ['DRAGO 8R','DRAGO 12R','DRAGO 16R','DRAGO 24R'],
+    'Gleaner': ['900 20p','900 25p','900 30p','900 35p'],
+  },
+  'Quadriciclo / UTV': {
+    'Can-Am': ['Defender HD5','Defender HD8','Defender HD10','Maverick Trail','Maverick Sport','Maverick X3','Outlander 450','Outlander 570','Outlander 650','Outlander 1000'],
+    'Polaris': ['Ranger 500','Ranger 570','Ranger 700','Ranger 900','Ranger 1000','Sportsman 450','Sportsman 570','Sportsman 850','Sportsman 1000','RZR 900','RZR 1000'],
+    'John Deere': ['Gator HPX 4x4','Gator HPX 4x6','Gator XUV560','Gator XUV590','Gator XUV835','Gator XUV865','Gator XUV865M'],
+    'Kawasaki': ['Mule 610','Mule Pro-FX','Mule Pro-FXT','Mule Pro-MX','Brute Force 300','Brute Force 650','Brute Force 750'],
+    'Yamaha': ['Grizzly 350','Grizzly 450','Grizzly 700','Kodiak 450','Kodiak 700','Wolverine X2','Wolverine X4','Viking 700','Viking VI'],
+    'Honda': ['FourTrax 420','FourTrax Foreman 500','Pioneer 500','Pioneer 700','Pioneer 1000','Talon 1000R','Talon 1000X'],
+    'CF Moto': ['ATV 500','ATV 625','UForce 500','UForce 600','UForce 1000','ZForce 500','ZForce 800','ZForce 1000'],
+  },
+  'Imóvel Rural': {
+    'Fazenda': ['Fazenda'],
+    'Sítio': ['Sítio'],
+    'Chácara': ['Chácara'],
+    'Granja': ['Granja'],
+    'Área Rural': ['Área Rural'],
+    'Rancho': ['Rancho'],
+  },
+};
+
+// Anos para select
+function popularAnos() {
+  const sel = document.getElementById('an-ano');
+  const anoAtual = new Date().getFullYear();
+  for (let a = anoAtual; a >= 1970; a--) {
+    const opt = document.createElement('option');
+    opt.value = a; opt.textContent = a;
+    sel.appendChild(opt);
+  }
+}
+
+function atualizarFiltroMarca(idMarca, idTipo) {
+  const tipo = document.getElementById(idTipo).value;
+  const sel = document.getElementById(idMarca);
+  sel.innerHTML = '<option value="">Todas</option>';
+  if (tipo && CATALOGO[tipo]) {
+    Object.keys(CATALOGO[tipo]).forEach(m => {
+      const opt = document.createElement('option');
+      opt.value = m; opt.textContent = m;
+      sel.appendChild(opt);
+    });
+  }
+}
+
+function onTipoChange() {
+  const tipo = document.getElementById('an-tipo').value;
+  const isImovel = tipo === 'Imóvel Rural';
+  document.getElementById('campos-equipamento').style.display = isImovel ? 'none' : 'block';
+  document.getElementById('campos-imovel').style.display = isImovel ? 'block' : 'none';
+
+  // Atualizar marcas
+  const selMarca = document.getElementById('an-marca');
+  const selModelo = document.getElementById('an-modelo');
+  selMarca.innerHTML = '<option value="">Selecione a marca</option>';
+  selModelo.innerHTML = '<option value="">Selecione a marca primeiro</option>';
+
+  if (tipo && CATALOGO[tipo] && !isImovel) {
+    selMarca.disabled = false;
+    Object.keys(CATALOGO[tipo]).forEach(m => {
+      const opt = document.createElement('option');
+      opt.value = m; opt.textContent = m;
+      selMarca.appendChild(opt);
+    });
+  } else {
+    selMarca.disabled = true;
+    selModelo.disabled = true;
+  }
+}
+
+function onMarcaChange() {
+  const tipo = document.getElementById('an-tipo').value;
+  const marca = document.getElementById('an-marca').value;
+  const selModelo = document.getElementById('an-modelo');
+  selModelo.innerHTML = '<option value="">Selecione o modelo</option>';
+  selModelo.disabled = true;
+
+  if (tipo && marca && CATALOGO[tipo] && CATALOGO[tipo][marca]) {
+    selModelo.disabled = false;
+    CATALOGO[tipo][marca].forEach(m => {
+      const opt = document.createElement('option');
+      opt.value = m; opt.textContent = m;
+      selModelo.appendChild(opt);
+    });
+  }
+}
+
+// ============================================================
+// INIT
+// ============================================================
+async function init() {
+  popularAnos();
+  const { data: { session } } = await sb.auth.getSession();
+  if (session) { usuarioAtual = session.user; atualizarHeaderLogado(); }
+  sb.auth.onAuthStateChange((event, session) => {
+    usuarioAtual = session?.user || null;
+    if (usuarioAtual) atualizarHeaderLogado(); else atualizarHeaderDeslogado();
+  });
+  carregarHomeAnuncios();
+  verificarRetornoPagamento();
+}
+
+function atualizarHeaderLogado() {
+  document.getElementById('header-btns').innerHTML = `
+    <span style="font-size:13px;color:var(--muted);font-weight:600;"><i class="ti ti-user-check"></i> ${usuarioAtual.email}</span>
+    <button class="btn-outline" onclick="goPage('painel')"><i class="ti ti-layout-dashboard"></i> Meu Painel</button>
+    <button class="btn-red" onclick="sair()"><i class="ti ti-logout"></i> Sair</button>`;
+  document.getElementById('nav-painel').style.display = 'block';
+  document.getElementById('nav-novo-anuncio').style.display = 'block';
+}
+
+function atualizarHeaderDeslogado() {
+  document.getElementById('header-btns').innerHTML = `
+    <button class="btn-outline" onclick="abrirAuth('login')"><i class="ti ti-user"></i> Área do Anunciante</button>
+    <button class="btn-solid" onclick="abrirAuth('cadastro')"><i class="ti ti-speakerphone"></i> Anuncie Grátis</button>`;
+  document.getElementById('nav-painel').style.display = 'none';
+  document.getElementById('nav-novo-anuncio').style.display = 'none';
+}
+
+function goPage(p) {
+  document.querySelectorAll('.page').forEach(el => el.classList.remove('active'));
+  document.querySelectorAll('.nav a').forEach(el => el.classList.remove('active'));
+  document.getElementById('page-' + p).classList.add('active');
+  const nav = document.getElementById('nav-' + p);
+  if (nav) nav.classList.add('active');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+  if (p === 'anuncios') carregarAnuncios();
+  if (p === 'painel') carregarPainel();
+  if (p === 'novo-anuncio') resetFormAnuncio();
+}
+
+function requireAuth(p) {
+  if (!usuarioAtual) { abrirAuth('login'); return; }
+  goPage(p);
+}
+
+// AUTH
+function abrirAuth(modo) { document.getElementById('modal-auth').classList.add('open'); trocarAuth(modo); }
+function fecharAuth() { document.getElementById('modal-auth').classList.remove('open'); }
+function trocarAuth(modo) {
+  document.getElementById('modal-login').style.display = modo === 'login' ? 'block' : 'none';
+  document.getElementById('modal-cadastro').style.display = modo === 'cadastro' ? 'block' : 'none';
+}
+
+async function fazerLogin() {
+  const email = document.getElementById('login-email').value.trim();
+  const senha = document.getElementById('login-senha').value;
+  const btn = document.getElementById('btn-login');
+  const msg = document.getElementById('login-msg');
+  if (!email || !senha) { msg.innerHTML = '<div class="msg error">Preencha email e senha.</div>'; return; }
+  btn.disabled = true; btn.textContent = 'Entrando...';
+  const { error } = await sb.auth.signInWithPassword({ email, password: senha });
+  btn.disabled = false; btn.innerHTML = 'Entrar';
+  if (error) { msg.innerHTML = '<div class="msg error">Email ou senha incorretos.</div>'; return; }
+  fecharAuth(); goPage('painel');
+}
+
+async function fazerCadastro() {
+  const nome = document.getElementById('cad-nome').value.trim();
+  const email = document.getElementById('cad-email').value.trim();
+  const wpp = document.getElementById('cad-wpp').value.trim();
+  const senha = document.getElementById('cad-senha').value;
+  const btn = document.getElementById('btn-cadastro');
+  const msg = document.getElementById('cadastro-msg');
+  if (!nome || !email || !wpp || !senha) { msg.innerHTML = '<div class="msg error">Preencha todos os campos.</div>'; return; }
+  if (senha.length < 6) { msg.innerHTML = '<div class="msg error">Senha deve ter pelo menos 6 caracteres.</div>'; return; }
+  btn.disabled = true; btn.textContent = 'Criando conta...';
+  const { error } = await sb.auth.signUp({ email, password: senha, options: { data: { nome, whatsapp: wpp } } });
+  btn.disabled = false; btn.innerHTML = 'Criar Conta Grátis';
+  if (error) { msg.innerHTML = `<div class="msg error">${error.message}</div>`; return; }
+  msg.innerHTML = '<div class="msg success">Conta criada! Verifique seu email para confirmar, depois faça login.</div>';
+  setTimeout(() => { fecharAuth(); trocarAuth('login'); }, 2500);
+}
+
+async function sair() { await sb.auth.signOut(); usuarioAtual = null; atualizarHeaderDeslogado(); goPage('home'); }
+
+// ANÚNCIOS
+async function carregarHomeAnuncios() {
+  const { data } = await sb.from('anuncios').select('*').eq('status','ativo').order('destaque',{ascending:false}).order('created_at',{ascending:false}).limit(12);
+  const el = document.getElementById('home-anuncios');
+  if (!data || data.length === 0) { el.innerHTML = '<div class="empty-state"><i class="ti ti-tractor"></i><p>Seja o primeiro a anunciar!</p></div>'; return; }
+  el.innerHTML = `<div class="anuncios-grid">${data.map(renderAnuncioCard).join('')}</div>`;
+}
+
+async function carregarAnuncios(filtros = {}) {
+  const el = document.getElementById('lista-anuncios');
+  el.innerHTML = '<div class="loading"><div class="spinner"></div><div>Carregando...</div></div>';
+  let q = sb.from('anuncios').select('*').eq('status','ativo').order('destaque',{ascending:false}).order('created_at',{ascending:false});
+  if (filtros.tipo) q = q.eq('tipo', filtros.tipo);
+  if (filtros.marca) q = q.eq('marca', filtros.marca);
+  if (filtros.cidade) q = q.ilike('cidade', `%${filtros.cidade}%`);
+  if (filtros.preco) q = q.lte('preco', filtros.preco);
+  const { data } = await q;
+  if (!data || data.length === 0) { el.innerHTML = '<div class="empty-state"><i class="ti ti-search-off"></i><p>Nenhum anúncio encontrado.</p></div>'; return; }
+  el.innerHTML = `<div class="anuncios-grid">${data.map(renderAnuncioCard).join('')}</div>`;
+}
+
+function buscarAnuncios() {
+  goPage('anuncios');
+  carregarAnuncios({ tipo: document.getElementById('f-tipo').value, marca: document.getElementById('f-marca').value, cidade: document.getElementById('f-cidade').value, preco: document.getElementById('f-preco').value });
+}
+
+function buscarAnuncios2() {
+  carregarAnuncios({ tipo: document.getElementById('f2-tipo').value, marca: document.getElementById('f2-marca').value, cidade: document.getElementById('f2-cidade').value, preco: document.getElementById('f2-preco').value });
+}
+
+function renderAnuncioCard(a) {
+  const foto = a.fotos && a.fotos.length > 0 ? `<img src="${a.fotos[0]}" alt="${a.titulo}" loading="lazy">` : `<div class="anuncio-thumb"><i class="ti ti-tractor"></i></div>`;
+  const preco = a.preco ? `R$ ${Number(a.preco).toLocaleString('pt-BR')}` : 'Consulte';
+  return `<div class="anuncio-card-wrap">${a.destaque ? '<span class="destaque-badge">⭐ Destaque</span>' : ''}
+    <div class="anuncio-card" onclick="abrirDetalhe('${a.id}')">
+      <div class="anuncio-thumb">${foto}</div>
+      <div class="anuncio-info">
+        <div class="anuncio-tag">${a.tipo || 'Equipamento'}</div>
+        <div class="anuncio-titulo">${a.titulo}</div>
+        <div class="anuncio-preco">${preco}</div>
+        <div class="anuncio-loc"><i class="ti ti-map-pin"></i> ${a.cidade || ''}, ${a.estado || 'MS'}</div>
+      </div>
+    </div></div>`;
+}
+
+async function abrirDetalhe(id) {
+  goPage('detalhe');
+  const el = document.getElementById('detalhe-content');
+  el.innerHTML = '<div class="loading" style="padding:48px"><div class="spinner"></div><div>Carregando...</div></div>';
+  const { data: a } = await sb.from('anuncios').select('*, perfis(nome, cidade, estado)').eq('id', id).single();
+  if (!a) { el.innerHTML = '<div class="empty-state"><i class="ti ti-alert-circle"></i><p>Anúncio não encontrado.</p></div>'; return; }
+  lightboxFotos = a.fotos || [];
+  const fotos = a.fotos && a.fotos.length > 0 ? a.fotos : [];
+  const mainFoto = fotos.length > 0 ? `<img id="det-main" class="det-main-photo" src="${fotos[0]}" onclick="abrirLightbox(0)">` : `<div class="det-main-photo" style="background:#eee;display:flex;align-items:center;justify-content:center;color:#bbb;font-size:64px;border-radius:8px;"><i class="ti ti-tractor"></i></div>`;
+  const thumbs = fotos.length > 1 ? `<div class="det-thumbs">${fotos.map((f,i) => `<img src="${f}" onclick="trocarFotoDetalhe('${f}',${i})" style="border-color:${i===0?'var(--verde)':'transparent'}">`).join('')}</div>` : '';
+  const preco = a.preco ? `R$ ${Number(a.preco).toLocaleString('pt-BR')}` : 'Consulte';
+  const wpp = a.whatsapp ? a.whatsapp.replace(/\D/g,'') : '';
+  const specs = [
+    a.marca ? `<div class="spec-item"><div class="spec-label">Marca</div><div class="spec-val">${a.marca}</div></div>` : '',
+    a.modelo ? `<div class="spec-item"><div class="spec-label">Modelo</div><div class="spec-val">${a.modelo}</div></div>` : '',
+    a.ano ? `<div class="spec-item"><div class="spec-label">Ano</div><div class="spec-val">${a.ano}</div></div>` : '',
+    a.tipo ? `<div class="spec-item"><div class="spec-label">Tipo</div><div class="spec-val">${a.tipo}</div></div>` : '',
+    a.conservacao ? `<div class="spec-item"><div class="spec-label">Conservação</div><div class="spec-val">${a.conservacao}</div></div>` : '',
+    a.horimetro ? `<div class="spec-item"><div class="spec-label">Horímetro/Km</div><div class="spec-val">${a.horimetro}</div></div>` : '',
+    a.tracao ? `<div class="spec-item"><div class="spec-label">Tração</div><div class="spec-val">${a.tracao}</div></div>` : '',
+    a.hectares ? `<div class="spec-item"><div class="spec-label">Área</div><div class="spec-val">${a.hectares} ha</div></div>` : '',
+    a.solo ? `<div class="spec-item"><div class="spec-label">Tipo de Solo</div><div class="spec-val">${a.solo}</div></div>` : '',
+    a.aptidao ? `<div class="spec-item"><div class="spec-label">Aptidão</div><div class="spec-val">${a.aptidao}</div></div>` : '',
+    `<div class="spec-item"><div class="spec-label">Localização</div><div class="spec-val">${a.cidade}, ${a.estado}</div></div>`,
+  ].filter(Boolean).join('');
+
+  el.innerHTML = `<div class="det-wrap">
+    <div class="det-left">
+      <div class="det-galeria">${mainFoto}${thumbs}</div>
+      <div class="det-specs" style="margin-top:16px;"><h3><i class="ti ti-list-check"></i> Especificações</h3><div class="spec-grid">${specs}</div></div>
+      ${a.descricao ? `<div class="det-desc"><h3><i class="ti ti-file-description"></i> Descrição</h3><p>${a.descricao}</p></div>` : ''}
+    </div>
+    <div class="det-right">
+      <div class="price-card">
+        <span class="prod-tag">${a.tipo}</span>
+        <h2>${a.titulo}</h2>
+        <div class="big-price">${preco}</div>
+        <div class="loc-line"><i class="ti ti-map-pin"></i> ${a.cidade}, ${a.estado}</div>
+        ${wpp ? `<button class="wpp-btn" onclick="window.open('https://wa.me/55${wpp}?text=Olá! Vi o anúncio ${encodeURIComponent(a.titulo)} no ShopFazenda!','_blank')"><i class="ti ti-brand-whatsapp"></i> Chamar no WhatsApp</button>` : ''}
+        ${a.telefone ? `<button class="tel-btn"><i class="ti ti-phone"></i> ${a.telefone}</button>` : ''}
+      </div>
+      <div class="anunc-card">
+        <h4>Anunciante</h4>
+        <div class="anunc-name">${a.perfis?.nome || 'ShopFazenda'}</div>
+        <div class="anunc-loc"><i class="ti ti-map-pin"></i> ${a.cidade}, ${a.estado}</div>
+        <div style="font-size:11px;color:var(--muted);margin-top:4px;">Anúncio verificado • ShopFazenda</div>
+      </div>
+      <div class="safety-box"><strong>⚠️ Dica de segurança:</strong><br>Nunca faça depósitos sem ver o equipamento pessoalmente. Confirme a documentação antes de fechar o negócio.</div>
+    </div>
+  </div>`;
+  sb.from('anuncios').update({ visualizacoes: (a.visualizacoes||0)+1 }).eq('id', id);
+}
+
+function trocarFotoDetalhe(src, idx) {
+  document.getElementById('det-main').src = src;
+  lightboxIdx = idx;
+  document.querySelectorAll('.det-thumbs img').forEach((el,i) => el.style.borderColor = i === idx ? 'var(--verde)' : 'transparent');
+}
+
+// LIGHTBOX
+function abrirLightbox(idx) {
+  lightboxIdx = idx;
+  document.getElementById('lightbox-img').src = lightboxFotos[idx];
+  document.getElementById('lightbox-count').textContent = `${idx+1} de ${lightboxFotos.length}`;
+  document.getElementById('lightbox').style.display = 'flex';
+}
+function fecharLightbox() { document.getElementById('lightbox').style.display = 'none'; }
+function nextPhoto() { lightboxIdx = (lightboxIdx+1) % lightboxFotos.length; abrirLightbox(lightboxIdx); }
+function prevPhoto() { lightboxIdx = (lightboxIdx-1+lightboxFotos.length) % lightboxFotos.length; abrirLightbox(lightboxIdx); }
+
+// PAINEL
+async function carregarPainel() {
+  if (!usuarioAtual) return;
+  document.getElementById('painel-welcome').textContent = `Bem-vindo, ${usuarioAtual.user_metadata?.nome || usuarioAtual.email}`;
+  const el = document.getElementById('meus-anuncios-lista');
+  const { data } = await sb.from('anuncios').select('*').eq('anunciante_id', usuarioAtual.id).order('created_at',{ascending:false});
+  if (!data || data.length === 0) {
+    el.innerHTML = `<div class="empty-state"><i class="ti ti-speakerphone"></i><p>Você ainda não tem anúncios.<br><a onclick="goPage('novo-anuncio')" style="color:var(--verde);cursor:pointer;font-weight:600;">Publicar meu primeiro anúncio →</a></p></div>`;
+    return;
+  }
+  el.innerHTML = `<div class="meus-anuncios-grid">${data.map(a => {
+    const foto = a.fotos && a.fotos.length > 0 ? `<img src="${a.fotos[0]}" alt="">` : `<i class="ti ti-tractor"></i>`;
+    const preco = a.preco ? `R$ ${Number(a.preco).toLocaleString('pt-BR')}` : 'Consulte';
+    const sc = a.status==='ativo'?'status-ativo':a.status==='pendente'?'status-pendente':'status-inativo';
+    return `<div class="meu-anuncio-item">
+      <div class="meu-anuncio-thumb">${foto}</div>
+      <div class="meu-anuncio-info">
+        <div class="meu-anuncio-titulo">${a.titulo} <span class="meu-anuncio-status ${sc}">${a.status}</span></div>
+        <div class="meu-anuncio-preco">${preco} · ${a.cidade}, ${a.estado} · 👁 ${a.visualizacoes||0} views</div>
+      </div>
+      <div class="meu-anuncio-actions">
+        <button class="btn-sm" onclick="editarAnuncio('${a.id}')"><i class="ti ti-edit"></i> Editar</button>
+        <button class="btn-sm danger" onclick="excluirAnuncio('${a.id}')"><i class="ti ti-trash"></i></button>
+      </div>
+    </div>`;
+  }).join('')}</div>`;
+}
+
+async function excluirAnuncio(id) {
+  if (!confirm('Tem certeza que deseja excluir este anúncio?')) return;
+  await sb.from('anuncios').delete().eq('id', id);
+  carregarPainel();
+}
+
+async function editarAnuncio(id) {
+  const { data: a } = await sb.from('anuncios').select('*').eq('id', id).single();
+  if (!a) return;
+  goPage('novo-anuncio');
+  document.getElementById('edit-anuncio-id').value = a.id;
+  document.getElementById('form-titulo-pg').textContent = 'Editar Anúncio';
+  document.getElementById('an-tipo').value = a.tipo || '';
+  onTipoChange();
+  setTimeout(() => {
+    if (a.marca) { document.getElementById('an-marca').value = a.marca; onMarcaChange(); }
+    setTimeout(() => { if (a.modelo) document.getElementById('an-modelo').value = a.modelo; }, 50);
+  }, 50);
+  document.getElementById('an-titulo').value = a.titulo || '';
+  document.getElementById('an-ano').value = a.ano || '';
+  document.getElementById('an-preco').value = a.preco || '';
+  document.getElementById('an-conservacao').value = a.conservacao || '';
+  document.getElementById('an-horimetro').value = a.horimetro || '';
+  document.getElementById('an-tracao').value = a.tracao || '';
+  document.getElementById('an-cidade').value = a.cidade || '';
+  document.getElementById('an-estado').value = a.estado || 'MS';
+  document.getElementById('an-whatsapp').value = a.whatsapp || '';
+  document.getElementById('an-telefone').value = a.telefone || '';
+  document.getElementById('an-descricao').value = a.descricao || '';
+  if (a.tipo === 'Imóvel Rural') {
+    document.getElementById('an-tipo-imovel').value = a.tipo_imovel || '';
+    document.getElementById('an-hectares').value = a.hectares || '';
+    document.getElementById('an-preco-imovel').value = a.preco || '';
+    document.getElementById('an-solo').value = a.solo || '';
+    document.getElementById('an-aptidao').value = a.aptidao || '';
+    document.getElementById('an-infraestrutura').value = a.infraestrutura || '';
+  }
+  fotosUrls = a.fotos || [];
+  renderFotosExistentes();
+}
+
+// FORM ANUNCIO
+function resetFormAnuncio() {
+  document.getElementById('edit-anuncio-id').value = '';
+  document.getElementById('form-titulo-pg').textContent = 'Novo Anúncio';
+  ['an-tipo','an-titulo','an-preco','an-cidade','an-whatsapp','an-telefone','an-descricao','an-horimetro',
+   'an-tipo-imovel','an-hectares','an-preco-imovel'].forEach(id => { const el = document.getElementById(id); if(el) el.value=''; });
+  document.getElementById('an-estado').value = 'MS';
+  document.getElementById('an-marca').innerHTML = '<option value="">Selecione o tipo primeiro</option>';
+  document.getElementById('an-marca').disabled = true;
+  document.getElementById('an-modelo').innerHTML = '<option value="">Selecione a marca primeiro</option>';
+  document.getElementById('an-modelo').disabled = true;
+  document.getElementById('an-conservacao').value = '';
+  document.getElementById('an-tracao').value = '';
+  document.getElementById('an-ano').value = '';
+  document.getElementById('campos-equipamento').style.display = 'block';
+  document.getElementById('campos-imovel').style.display = 'none';
+  fotosUpload = []; fotosUrls = [];
+  document.getElementById('foto-preview-grid').innerHTML = '';
+  document.getElementById('form-msg').innerHTML = '';
+  document.getElementById('foto-input').value = '';
+}
+
+function previewFotos(input) {
+  fotosUpload = [...fotosUpload, ...Array.from(input.files)].slice(0, 10);
+  renderFotosExistentes();
+}
+
+function renderFotosExistentes() {
+  const grid = document.getElementById('foto-preview-grid');
+  const urlPreviews = fotosUrls.map((url,i) => `<div class="foto-preview"><img src="${url}"><button class="foto-remove" onclick="removerFotoUrl(${i})">×</button></div>`);
+  const uploadPreviews = fotosUpload.map((f,i) => { const url = URL.createObjectURL(f); return `<div class="foto-preview"><img src="${url}"><button class="foto-remove" onclick="removerFotoUpload(${i})">×</button></div>`; });
+  grid.innerHTML = [...urlPreviews, ...uploadPreviews].join('');
+}
+
+function removerFotoUpload(i) { fotosUpload.splice(i,1); renderFotosExistentes(); }
+function removerFotoUrl(i) { fotosUrls.splice(i,1); renderFotosExistentes(); }
+
+async function publicarAnuncio() {
+  if (!usuarioAtual) { abrirAuth('login'); return; }
+  const tipo = document.getElementById('an-tipo').value;
+  const titulo = document.getElementById('an-titulo').value.trim();
+  const cidade = document.getElementById('an-cidade').value.trim();
+  const whatsapp = document.getElementById('an-whatsapp').value.trim();
+  const msg = document.getElementById('form-msg');
+  const isImovel = tipo === 'Imóvel Rural';
+  const preco = isImovel ? document.getElementById('an-preco-imovel').value : document.getElementById('an-preco').value;
+
+  if (!tipo || !titulo || !preco || !cidade || !whatsapp) {
+    msg.innerHTML = '<div class="msg error">Preencha todos os campos obrigatórios (*).</div>'; return;
+  }
+
+  const btn = document.getElementById('btn-publicar');
+  btn.disabled = true; btn.textContent = 'Publicando...';
+  msg.innerHTML = '';
+
+  let todasFotos = [...fotosUrls];
+  if (fotosUpload.length > 0) {
+    document.getElementById('upload-progress').style.display = 'block';
+    for (let i = 0; i < fotosUpload.length; i++) {
+      const f = fotosUpload[i];
+      const ext = f.name.split('.').pop();
+      const path = `${usuarioAtual.id}/${Date.now()}-${i}.${ext}`;
+      document.getElementById('progress-text').textContent = `Enviando foto ${i+1} de ${fotosUpload.length}...`;
+      document.getElementById('progress-bar').style.width = `${((i+1)/fotosUpload.length)*100}%`;
+      const { error: upErr } = await sb.storage.from('fotos-anuncios').upload(path, f);
+      if (!upErr) {
+        const { data: urlData } = sb.storage.from('fotos-anuncios').getPublicUrl(path);
+        todasFotos.push(urlData.publicUrl);
+      }
+    }
+    document.getElementById('upload-progress').style.display = 'none';
+  }
+
+  const editId = document.getElementById('edit-anuncio-id').value;
+  const payload = {
+    titulo, tipo, preco: Number(preco), cidade,
+    estado: document.getElementById('an-estado').value,
+    whatsapp, telefone: document.getElementById('an-telefone').value,
+    descricao: document.getElementById('an-descricao').value,
+    fotos: todasFotos, status: 'ativo',
+    anunciante_id: usuarioAtual.id,
+    ...(isImovel ? {
+      tipo_imovel: document.getElementById('an-tipo-imovel').value,
+      hectares: document.getElementById('an-hectares').value ? Number(document.getElementById('an-hectares').value) : null,
+      solo: document.getElementById('an-solo').value,
+      aptidao: document.getElementById('an-aptidao').value,
+      infraestrutura: document.getElementById('an-infraestrutura').value,
+    } : {
+      marca: document.getElementById('an-marca').value,
+      modelo: document.getElementById('an-modelo').value,
+      ano: document.getElementById('an-ano').value ? Number(document.getElementById('an-ano').value) : null,
+      conservacao: document.getElementById('an-conservacao').value,
+      horimetro: document.getElementById('an-horimetro').value,
+      tracao: document.getElementById('an-tracao').value,
+    }),
+  };
+
+  let error;
+  if (editId) { ({ error } = await sb.from('anuncios').update(payload).eq('id', editId)); }
+  else { ({ error } = await sb.from('anuncios').insert(payload)); }
+
+  btn.disabled = false; btn.innerHTML = '<i class="ti ti-check"></i> Publicar Anúncio';
+  if (error) { msg.innerHTML = `<div class="msg error">Erro: ${error.message}</div>`; return; }
+  msg.innerHTML = '<div class="msg success">✅ Anúncio publicado com sucesso!</div>';
+  setTimeout(() => goPage('painel'), 1500);
+}
+
+// ============================================================
+// PAGAMENTO — MERCADO PAGO
+// ============================================================
+async function assinarPlano(plano) {
+  if (!usuarioAtual) { abrirAuth('login'); return; }
+  const msg = document.getElementById('planos-msg');
+  msg.innerHTML = '<div class="msg success">⏳ Redirecionando para o pagamento...</div>';
+
+  try {
+    const resp = await fetch('/.netlify/functions/criar-pagamento', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        plano,
+        anunciante_id: usuarioAtual.id,
+        email: usuarioAtual.email,
+      }),
+    });
+    const data = await resp.json();
+    if (data.init_point) {
+      window.location.href = data.init_point;
+    } else {
+      msg.innerHTML = '<div class="msg error">Erro ao iniciar pagamento. Tente novamente.</div>';
+    }
+  } catch (err) {
+    msg.innerHTML = '<div class="msg error">Erro de conexão. Tente novamente.</div>';
+  }
+}
+
+// Verificar retorno do pagamento
+function verificarRetornoPagamento() {
+  const params = new URLSearchParams(window.location.search);
+  const status = params.get('pagamento');
+  const plano = params.get('plano');
+  const uid = params.get('uid');
+
+  if (status === 'sucesso' && uid && plano) {
+    const dias = { bronze:30, prata:60, ouro:120, revenda:180 }[plano] || 30;
+    const expira = new Date();
+    expira.setDate(expira.getDate() + dias);
+    sb.from('perfis').update({
+      tipo_plano: plano,
+      plano_ativo: true,
+      plano_expira_em: expira.toISOString(),
+    }).eq('id', uid).then(() => {
+      window.history.replaceState({}, '', '/');
+      setTimeout(() => {
+        alert('✅ Pagamento confirmado! Seu plano foi ativado. Agora você pode publicar seus anúncios.');
+        goPage('novo-anuncio');
+      }, 500);
+    });
+  } else if (status === 'falha') {
+    window.history.replaceState({}, '', '/');
+    alert('❌ O pagamento não foi concluído. Tente novamente.');
+    goPage('anuncie');
+  }
+}
+
+document.addEventListener('keydown', e => {
+  if (document.getElementById('lightbox').style.display === 'flex') {
+    if (e.key === 'ArrowRight') nextPhoto();
+    if (e.key === 'ArrowLeft') prevPhoto();
+    if (e.key === 'Escape') fecharLightbox();
+  }
+  if (e.key === 'Escape') fecharAuth();
+});
+
+init();
+</script>
+</body>
+</html>
