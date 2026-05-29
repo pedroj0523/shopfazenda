@@ -824,10 +824,51 @@ function renderFotosExistentes(){const g=document.getElementById('foto-preview-g
 function removerFotoUpload(i){fotosUpload.splice(i,1);renderFotosExistentes();}
 function removerFotoUrl(i){fotosUrls.splice(i,1);renderFotosExistentes();}
 
+async function verificarAcessoPublicar(){
+  // Data limite do período gratuito de lançamento: 3 meses a partir de 29/05/2025
+  const DATA_LIMITE_GRATUITO = new Date('2025-08-29T23:59:59');
+  const hoje = new Date();
+
+  // Buscar perfil do anunciante
+  const { data: perfil } = await sb.from('perfis').select('*').eq('id', usuarioAtual.id).single();
+
+  // Se tem plano ativo e não expirou → pode publicar
+  if (perfil && perfil.plano_ativo && perfil.plano_expira_em && new Date(perfil.plano_expira_em) > hoje) {
+    return { permitido: true };
+  }
+
+  // Se se cadastrou dentro do período gratuito de lançamento → pode publicar
+  const dataCadastro = perfil?.created_at ? new Date(perfil.created_at) : null;
+  if (dataCadastro && dataCadastro <= DATA_LIMITE_GRATUITO) {
+    return { permitido: true };
+  }
+
+  // Caso contrário → bloqueado
+  return { permitido: false };
+}
+
 async function publicarAnuncio(){
   if(!usuarioAtual){abrirAuth('login');return;}
   const tipo=document.getElementById('an-tipo').value,titulo=document.getElementById('an-titulo').value.trim(),cidade=document.getElementById('an-cidade').value.trim(),whatsapp=document.getElementById('an-whatsapp').value.trim(),msg=document.getElementById('form-msg'),isI=tipo==='Imóvel Rural',preco=isI?document.getElementById('an-preco-imovel').value:document.getElementById('an-preco').value;
   if(!tipo||!titulo||!preco||!cidade||!whatsapp){msg.innerHTML='<div class="msg error">Preencha todos os campos obrigatórios (*).</div>';return;}
+
+  // Verificar se pode publicar (plano ou período gratuito)
+  const editId = document.getElementById('edit-anuncio-id').value;
+  if (!editId) { // só verifica em novos anúncios, não em edições
+    msg.innerHTML = '<div class="msg" style="background:#1a1d27;color:#94a3b8;border:1px solid #2a2d3e;padding:10px 14px;border-radius:6px;">Verificando seu plano...</div>';
+    const acesso = await verificarAcessoPublicar();
+    if (!acesso.permitido) {
+      msg.innerHTML = `<div class="msg error" style="font-size:14px;padding:16px;">
+        🔒 <strong>Seu período gratuito encerrou.</strong><br><br>
+        Escolha um plano para continuar anunciando no ShopFazenda.<br><br>
+        <button onclick="goPage('anuncie')" style="background:var(--verde);color:#fff;border:none;padding:10px 20px;border-radius:6px;font-size:13px;font-weight:700;cursor:pointer;margin-top:4px;">
+          Ver Planos →
+        </button>
+      </div>`;
+      return;
+    }
+    msg.innerHTML = '';
+  }
   const btn=document.getElementById('btn-publicar');btn.disabled=true;btn.textContent='Publicando...';msg.innerHTML='';
   let todasFotos=[...fotosUrls];
   if(fotosUpload.length>0){
@@ -835,7 +876,6 @@ async function publicarAnuncio(){
     for(let i=0;i<fotosUpload.length;i++){const f=fotosUpload[i],ext=f.name.split('.').pop(),path=`${usuarioAtual.id}/${Date.now()}-${i}.${ext}`;document.getElementById('progress-text').textContent=`Enviando foto ${i+1} de ${fotosUpload.length}...`;document.getElementById('progress-bar').style.width=`${((i+1)/fotosUpload.length)*100}%`;const{error:upE}=await sb.storage.from('fotos-anuncios').upload(path,f);if(!upE){const{data:ud}=sb.storage.from('fotos-anuncios').getPublicUrl(path);todasFotos.push(ud.publicUrl);}}
     document.getElementById('upload-progress').style.display='none';
   }
-  const editId=document.getElementById('edit-anuncio-id').value;
   const payload={titulo,tipo,preco:Number(preco),cidade,estado:document.getElementById('an-estado').value,whatsapp,telefone:document.getElementById('an-telefone').value,descricao:document.getElementById('an-descricao').value,fotos:todasFotos,status:'ativo',anunciante_id:usuarioAtual.id,...(isI?{tipo_imovel:document.getElementById('an-tipo-imovel').value,hectares:document.getElementById('an-hectares').value?Number(document.getElementById('an-hectares').value):null,solo:document.getElementById('an-solo').value,aptidao:document.getElementById('an-aptidao').value,infraestrutura:document.getElementById('an-infraestrutura').value}:{marca:document.getElementById('an-marca').value,modelo:document.getElementById('an-modelo').value,ano:document.getElementById('an-ano').value?Number(document.getElementById('an-ano').value):null,conservacao:document.getElementById('an-conservacao').value,horimetro:document.getElementById('an-horimetro').value,tracao:document.getElementById('an-tracao').value})};
   let error;if(editId){({error}=await sb.from('anuncios').update(payload).eq('id',editId));}else{({error}=await sb.from('anuncios').insert(payload));}
   btn.disabled=false;btn.innerHTML='<i class="ti ti-check"></i> Publicar Anúncio';
