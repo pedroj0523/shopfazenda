@@ -326,7 +326,7 @@ body { font-family: 'Segoe UI', Tahoma, Arial, sans-serif; background: var(--bg)
         <div class="card-body">
           <div class="filter-label">Tipo</div>
           <select class="filter-select" id="f-tipo" onchange="atualizarFiltroMarca('f-marca','f-tipo'); atualizarFiltroModelo('f-modelo','f-tipo','f-marca');">
-            <option value="">Todos</option><option>Trator</option><option>Colheitadeira</option><option>Implemento Agrícola</option><option>Pá Carregadeira</option><option>Escavadeira</option><option>Plataforma</option><option>Quadriciclo / UTV</option><option>Imóvel Rural</option>
+            <option value="">Todos</option><option>Trator</option><option>Colheitadeira</option><option>Implemento Agrícola</option><option>Pá Carregadeira</option><option>Escavadeira</option><option>Plataforma</option><option>Quadriciclo / UTV</option><option>Imóvel Rural</option><option>Animal</option>
           </select>
           <div class="filter-label">Marca</div>
           <select class="filter-select" id="f-marca" onchange="atualizarFiltroModelo('f-modelo','f-tipo','f-marca')"><option value="">Todas</option></select>
@@ -369,7 +369,7 @@ body { font-family: 'Segoe UI', Tahoma, Arial, sans-serif; background: var(--bg)
         <div class="card-body">
           <div class="filter-label">Tipo</div>
           <select class="filter-select" id="f2-tipo" onchange="atualizarFiltroMarca('f2-marca','f2-tipo'); atualizarFiltroModelo('f2-modelo','f2-tipo','f2-marca');">
-            <option value="">Todos</option><option>Trator</option><option>Colheitadeira</option><option>Implemento Agrícola</option><option>Pá Carregadeira</option><option>Escavadeira</option><option>Plataforma</option><option>Quadriciclo / UTV</option><option>Imóvel Rural</option>
+            <option value="">Todos</option><option>Trator</option><option>Colheitadeira</option><option>Implemento Agrícola</option><option>Pá Carregadeira</option><option>Escavadeira</option><option>Plataforma</option><option>Quadriciclo / UTV</option><option>Imóvel Rural</option><option>Animal</option>
           </select>
           <div class="filter-label">Marca</div>
           <select class="filter-select" id="f2-marca" onchange="atualizarFiltroModelo('f2-modelo','f2-tipo','f2-marca')"><option value="">Todas</option></select>
@@ -442,8 +442,12 @@ body { font-family: 'Segoe UI', Tahoma, Arial, sans-serif; background: var(--bg)
       <input type="hidden" id="edit-anuncio-id">
       <div class="form-section-title">Informações do Equipamento</div>
       <div class="form-row">
-        <div class="form-group"><label>Tipo *</label><select id="an-tipo" onchange="onTipoChange()" required><option value="">Selecione o tipo...</option><option>Trator</option><option>Colheitadeira</option><option>Implemento Agrícola</option><option>Pá Carregadeira</option><option>Escavadeira</option><option>Plataforma</option><option>Quadriciclo / UTV</option><option>Imóvel Rural</option></select></div>
-        <div class="form-group"><label>Título do Anúncio *</label><input type="text" id="an-titulo" placeholder="Ex: Trator John Deere 5078E 2020"></div>
+        <div class="form-group"><label>Tipo *</label><select id="an-tipo" onchange="onTipoChange()" required><option value="">Selecione o tipo...</option><option>Trator</option><option>Colheitadeira</option><option>Implemento Agrícola</option><option>Pá Carregadeira</option><option>Escavadeira</option><option>Plataforma</option><option>Quadriciclo / UTV</option><option>Imóvel Rural</option><option>Animal</option></select></div>
+        <div class="form-group" id="campo-titulo-manual"><label>Título do Anúncio *</label><input type="text" id="an-titulo" placeholder="Ex: Trator John Deere 5078E 2020"></div>
+        <div class="form-group campo-oculto" id="campo-titulo-auto">
+          <label>Título do Anúncio (gerado automaticamente)</label>
+          <div style="background:var(--light);border:1.5px solid var(--border);border-radius:6px;padding:10px 12px;font-size:13px;font-weight:700;color:var(--verde);" id="an-titulo-preview">Preencha os campos abaixo</div>
+        </div>
       </div>
       <div id="campos-equipamento">
         <div class="form-row">
@@ -472,6 +476,72 @@ body { font-family: 'Segoe UI', Tahoma, Arial, sans-serif; background: var(--bg)
         <div class="form-row">
           <div class="form-group"><label>Aptidão</label><select id="an-aptidao"><option value="">Selecione</option><option>Lavoura</option><option>Pecuária</option><option>Misto (Lavoura e Pecuária)</option><option>Reflorestamento</option><option>Outro</option></select></div>
           <div class="form-group"><label>Infraestrutura</label><select id="an-infraestrutura"><option value="">Selecione</option><option>Sede, curral e galpão</option><option>Sede e galpão</option><option>Apenas sede</option><option>Sem benfeitorias</option></select></div>
+        </div>
+      </div>
+      <div id="campos-animal" class="campo-oculto">
+        <div class="form-row">
+          <div class="form-group">
+            <label>Espécie *</label>
+            <select id="an-especie" onchange="onEspecieChange(); atualizarTituloAnimal();">
+              <option value="">Selecione</option>
+              <option value="Bovino">Bovino</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Raça *</label>
+            <select id="an-raca" onchange="atualizarTituloAnimal()">
+              <option value="">Selecione a espécie primeiro</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Classificação *</label>
+            <select id="an-classificacao" onchange="atualizarTituloAnimal()">
+              <option value="">Selecione a espécie primeiro</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Sexo *</label>
+            <select id="an-sexo" onchange="atualizarTituloAnimal()">
+              <option value="">Selecione</option>
+              <option>Macho</option>
+              <option>Fêmea</option>
+              <option>Lote misto</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-row-3">
+          <div class="form-group">
+            <label>Quantidade de cabeças *</label>
+            <input type="number" id="an-quantidade" placeholder="Ex: 30" min="1" oninput="atualizarTituloAnimal()">
+          </div>
+          <div class="form-group">
+            <label>Idade aproximada</label>
+            <input type="text" id="an-idade" placeholder="Ex: 8 a 10 meses">
+          </div>
+          <div class="form-group">
+            <label>Peso médio (kg)</label>
+            <input type="number" id="an-peso" placeholder="Ex: 220">
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Tipo de Preço *</label>
+            <select id="an-tipo-preco" onchange="onTipoPrecoChange()">
+              <option value="">Selecione</option>
+              <option value="Por cabeça">Por cabeça</option>
+              <option value="A combinar">A combinar</option>
+            </select>
+          </div>
+          <div class="form-group" id="campo-preco-animal">
+            <label>Preço por cabeça (R$) *</label>
+            <input type="number" id="an-preco-animal" placeholder="Ex: 3200">
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Vídeo (link do YouTube, Instagram, Drive, etc.)</label>
+          <input type="text" id="an-video" placeholder="https://...">
         </div>
       </div>
       <div class="form-section-title">Localização e Contato</div>
@@ -660,7 +730,7 @@ body { font-family: 'Segoe UI', Tahoma, Arial, sans-serif; background: var(--bg)
       <div class="form-group">
         <label>Tipo</label>
         <select id="bd-tipo" onchange="atualizarFiltroMarca('bd-marca','bd-tipo'); onTipoChangeBD();">
-          <option value="">Todos</option><option>Trator</option><option>Colheitadeira</option><option>Implemento Agrícola</option><option>Pá Carregadeira</option><option>Escavadeira</option><option>Plataforma</option><option>Quadriciclo / UTV</option><option>Imóvel Rural</option>
+          <option value="">Todos</option><option>Trator</option><option>Colheitadeira</option><option>Implemento Agrícola</option><option>Pá Carregadeira</option><option>Escavadeira</option><option>Plataforma</option><option>Quadriciclo / UTV</option><option>Imóvel Rural</option><option>Animal</option>
         </select>
       </div>
       <div class="form-group">
@@ -802,10 +872,62 @@ const CATALOGO={
   'Imóvel Rural':{'Fazenda':['Fazenda'],'Sítio':['Sítio'],'Chácara':['Chácara'],'Granja':['Granja'],'Área Rural':['Área Rural'],'Rancho':['Rancho']},
 };
 
+const RACAS_BOVINO = ['Nelore','Nelore Mocho','Brahman','Angus','Brangus','Braford','Senepol','Tabapuã','Guzerá','Gir','Girolando','Holandês','Jersey','Simental','Canchim','Cruzamento Industrial','Cruzado','Sem raça definida','Outra'];
+const CLASSIFICACAO_BOVINO = ['Bezerro','Bezerra','Garrote','Novilha','Boi','Vaca','Touro','Touruno','Outra'];
+
 function popularAnos(){const s=document.getElementById('an-ano'),a=new Date().getFullYear();for(let i=a;i>=1970;i--){const o=document.createElement('option');o.value=i;o.textContent=i;s.appendChild(o);}}
 function atualizarFiltroMarca(idM,idT){const t=document.getElementById(idT).value,s=document.getElementById(idM);s.innerHTML='<option value="">Todas</option>';if(t&&CATALOGO[t])Object.keys(CATALOGO[t]).forEach(m=>{const o=document.createElement('option');o.value=m;o.textContent=m;s.appendChild(o);});}
 function atualizarFiltroModelo(idMo,idT,idM){const t=document.getElementById(idT).value,m=document.getElementById(idM).value,s=document.getElementById(idMo);s.innerHTML='<option value="">Todos</option>';if(t&&m&&CATALOGO[t]&&CATALOGO[t][m]){CATALOGO[t][m].forEach(mo=>{const o=document.createElement('option');o.value=mo;o.textContent=mo;s.appendChild(o);});}}
-function onTipoChange(){const t=document.getElementById('an-tipo').value,isI=t==='Imóvel Rural';document.getElementById('campos-equipamento').style.display=isI?'none':'block';document.getElementById('campos-imovel').style.display=isI?'block':'none';const sm=document.getElementById('an-marca'),smo=document.getElementById('an-modelo');sm.innerHTML='<option value="">Selecione a marca</option>';smo.innerHTML='<option value="">Selecione a marca primeiro</option>';if(t&&CATALOGO[t]&&!isI){sm.disabled=false;Object.keys(CATALOGO[t]).forEach(m=>{const o=document.createElement('option');o.value=m;o.textContent=m;sm.appendChild(o);});}else{sm.disabled=true;smo.disabled=true;}}
+function onTipoChange(){
+  const t=document.getElementById('an-tipo').value,isI=t==='Imóvel Rural',isA=t==='Animal';
+  document.getElementById('campos-equipamento').style.display=(isI||isA)?'none':'block';
+  document.getElementById('campos-imovel').style.display=isI?'block':'none';
+  document.getElementById('campos-animal').style.display=isA?'block':'none';
+  document.getElementById('campo-titulo-manual').classList.toggle('campo-oculto',isA);
+  document.getElementById('campo-titulo-auto').classList.toggle('campo-oculto',!isA);
+  const sm=document.getElementById('an-marca'),smo=document.getElementById('an-modelo');
+  sm.innerHTML='<option value="">Selecione a marca</option>';smo.innerHTML='<option value="">Selecione a marca primeiro</option>';
+  if(t&&CATALOGO[t]&&!isI&&!isA){sm.disabled=false;Object.keys(CATALOGO[t]).forEach(m=>{const o=document.createElement('option');o.value=m;o.textContent=m;sm.appendChild(o);});}else{sm.disabled=true;smo.disabled=true;}
+  if(isA){
+    document.getElementById('an-especie').value='';
+    onEspecieChange();
+  }
+}
+
+function onEspecieChange(){
+  const esp=document.getElementById('an-especie').value;
+  const selRaca=document.getElementById('an-raca'),selClass=document.getElementById('an-classificacao');
+  selRaca.innerHTML='';selClass.innerHTML='';
+  if(esp==='Bovino'){
+    selRaca.innerHTML='<option value="">Selecione</option>'+RACAS_BOVINO.map(r=>`<option>${r}</option>`).join('');
+    selClass.innerHTML='<option value="">Selecione</option>'+CLASSIFICACAO_BOVINO.map(c=>`<option>${c}</option>`).join('');
+  } else {
+    selRaca.innerHTML='<option value="">Selecione a espécie primeiro</option>';
+    selClass.innerHTML='<option value="">Selecione a espécie primeiro</option>';
+  }
+}
+
+function onTipoPrecoChange(){
+  const tp=document.getElementById('an-tipo-preco').value;
+  document.getElementById('campo-preco-animal').style.display = tp==='Por cabeça' ? 'block' : 'none';
+}
+
+function atualizarTituloAnimal(){
+  const qtd=document.getElementById('an-quantidade').value;
+  const classif=document.getElementById('an-classificacao').value;
+  const raca=document.getElementById('an-raca').value;
+  const sexo=document.getElementById('an-sexo').value;
+  const preview=document.getElementById('an-titulo-preview');
+  if(!qtd||!classif||!raca||!sexo){ preview.textContent='Preencha os campos acima para gerar o título'; return; }
+  let classifPlural=classif;
+  // Pluralização simples para classificações comuns
+  const plurais={'Bezerro':'Bezerros','Bezerra':'Bezerras','Garrote':'Garrotes','Novilha':'Novilhas','Boi':'Bois','Vaca':'Vacas','Touro':'Touros','Touruno':'Tourunos','Outra':'Outra'};
+  if(Number(qtd)>1 && plurais[classif]) classifPlural=plurais[classif];
+  let sexoTexto = sexo==='Lote misto' ? 'Lote Misto' : (sexo==='Macho'?(Number(qtd)>1?'Machos':'Macho'):(Number(qtd)>1?'Fêmeas':'Fêmea'));
+  const titulo = `${qtd} ${classifPlural} ${raca}${sexo==='Lote misto'?' - Lote Misto':' '+sexoTexto}`;
+  preview.textContent = titulo.trim();
+}
+
 function onMarcaChange(){const t=document.getElementById('an-tipo').value,m=document.getElementById('an-marca').value,s=document.getElementById('an-modelo');s.innerHTML='<option value="">Selecione o modelo</option>';s.disabled=true;if(t&&m&&CATALOGO[t]&&CATALOGO[t][m]){s.disabled=false;CATALOGO[t][m].forEach(mo=>{const o=document.createElement('option');o.value=mo;o.textContent=mo;s.appendChild(o);});}}
 
 async function init(){
@@ -958,8 +1080,19 @@ function buscarAnunciosDetalhado(){
 
 function renderCard(a){
   const foto=a.fotos&&a.fotos.length>0?`<img src="${a.fotos[0]}" alt="${a.titulo}" loading="lazy">`:`<div class="anuncio-thumb"><i class="ti ti-tractor"></i></div>`;
-  const preco=a.preco?`R$ ${Number(a.preco).toLocaleString('pt-BR')}`:'Consulte';
-  return `<div class="anuncio-card-wrap">${a.destaque?'<span class="destaque-badge">⭐ Destaque</span>':''}<div class="anuncio-card" onclick="abrirDetalhe('${a.id}')"><div class="anuncio-thumb">${foto}</div><div class="anuncio-info"><div class="anuncio-tag">${a.tipo||'Equipamento'}</div><div class="anuncio-titulo">${a.titulo}</div><div class="anuncio-preco">${preco}</div><div class="anuncio-loc"><i class="ti ti-map-pin"></i> ${a.cidade||''}, ${a.estado||'MS'}</div></div></div></div>`;
+  const isA=a.tipo==='Animal';
+  let preco, subtitulo='';
+  if(isA){
+    preco = a.animal_tipo_preco==='A combinar' ? 'A combinar' : (a.preco?`R$ ${Number(a.preco).toLocaleString('pt-BR')} por cabeça`:'A combinar');
+    const partes=[];
+    if(a.animal_idade) partes.push(a.animal_idade);
+    if(a.animal_peso_medio) partes.push(`${a.animal_peso_medio} kg de média`);
+    subtitulo = partes.join(' • ');
+  } else {
+    preco=a.preco?`R$ ${Number(a.preco).toLocaleString('pt-BR')}`:'Consulte';
+  }
+  const videoBadge = (isA && a.video_url) ? '<span style="background:#3b82f6;color:#fff;font-size:9px;font-weight:700;padding:2px 6px;border-radius:8px;margin-left:5px;"><i class="ti ti-video"></i> Com vídeo</span>' : '';
+  return `<div class="anuncio-card-wrap">${a.destaque?'<span class="destaque-badge">⭐ Destaque</span>':''}<div class="anuncio-card" onclick="abrirDetalhe('${a.id}')"><div class="anuncio-thumb">${foto}</div><div class="anuncio-info"><div class="anuncio-tag">${a.tipo||'Equipamento'}</div><div class="anuncio-titulo">${a.titulo}${videoBadge}</div>${subtitulo?`<div style="font-size:11px;color:var(--muted);margin-bottom:3px;">${subtitulo}</div>`:''}<div class="anuncio-preco">${preco}</div><div class="anuncio-loc"><i class="ti ti-map-pin"></i> ${a.cidade||''}, ${a.estado||'MS'}</div></div></div></div>`;
 }
 
 async function abrirDetalhe(id){
@@ -968,14 +1101,35 @@ async function abrirDetalhe(id){
   el.innerHTML='<div class="loading" style="padding:48px"><div class="spinner"></div><div>Carregando...</div></div>';
   const{data:a}=await sb.from('anuncios').select('*, perfis(nome,cidade,estado)').eq('id',id).single();
   if(!a){el.innerHTML='<div class="empty-state"><i class="ti ti-alert-circle"></i><p>Anúncio não encontrado.</p></div>';return;}
+  const isA=a.tipo==='Animal';
   lightboxFotos=a.fotos||[];
   const fotos=a.fotos&&a.fotos.length>0?a.fotos:[];
   const mF=fotos.length>0?`<img id="det-main" class="det-main-photo" src="${fotos[0]}" onclick="abrirLightbox(0)">`:`<div class="det-main-photo" style="background:#eee;display:flex;align-items:center;justify-content:center;color:#bbb;font-size:64px;border-radius:8px;"><i class="ti ti-tractor"></i></div>`;
   const ths=fotos.length>1?`<div class="det-thumbs">${fotos.map((f,i)=>`<img src="${f}" onclick="trocarFotoDetalhe('${f}',${i})" style="border-color:${i===0?'var(--verde)':'transparent'}">`).join('')}</div>`:'';
-  const preco=a.preco?`R$ ${Number(a.preco).toLocaleString('pt-BR')}`:'Consulte';
+  let preco;
+  if(isA){
+    preco = a.animal_tipo_preco==='A combinar' ? 'A combinar' : (a.preco?`R$ ${Number(a.preco).toLocaleString('pt-BR')} por cabeça`:'A combinar');
+  } else {
+    preco=a.preco?`R$ ${Number(a.preco).toLocaleString('pt-BR')}`:'Consulte';
+  }
   const wpp=a.whatsapp?a.whatsapp.replace(/\D/g,''):'';
-  const specs=[a.marca?`<div class="spec-item"><div class="spec-label">Marca</div><div class="spec-val">${a.marca}</div></div>`:'',a.modelo?`<div class="spec-item"><div class="spec-label">Modelo</div><div class="spec-val">${a.modelo}</div></div>`:'',a.ano?`<div class="spec-item"><div class="spec-label">Ano</div><div class="spec-val">${a.ano}</div></div>`:'',a.tipo?`<div class="spec-item"><div class="spec-label">Tipo</div><div class="spec-val">${a.tipo}</div></div>`:'',a.conservacao?`<div class="spec-item"><div class="spec-label">Conservação</div><div class="spec-val">${a.conservacao}</div></div>`:'',a.horimetro?`<div class="spec-item"><div class="spec-label">Horímetro/Km</div><div class="spec-val">${a.horimetro}</div></div>`:'',a.tracao?`<div class="spec-item"><div class="spec-label">Tração</div><div class="spec-val">${a.tracao}</div></div>`:'',a.hectares?`<div class="spec-item"><div class="spec-label">Área</div><div class="spec-val">${a.hectares} ha</div></div>`:'',`<div class="spec-item"><div class="spec-label">Localização</div><div class="spec-val">${a.cidade}, ${a.estado}</div></div>`].filter(Boolean).join('');
-  el.innerHTML=`<div class="det-wrap"><div class="det-left"><div>${mF}${ths}</div><div class="det-specs" style="margin-top:16px;"><h3><i class="ti ti-list-check"></i> Especificações</h3><div class="spec-grid">${specs}</div></div>${a.descricao?`<div class="det-desc"><h3><i class="ti ti-file-description"></i> Descrição</h3><p>${a.descricao}</p></div>`:''}</div><div class="det-right"><div class="price-card"><span class="prod-tag">${a.tipo}</span><h2>${a.titulo}</h2><div class="big-price">${preco}</div><div class="loc-line"><i class="ti ti-map-pin"></i> ${a.cidade}, ${a.estado}</div>${wpp?`<button class="wpp-btn" onclick="window.open('https://wa.me/55${wpp}?text=Olá! Vi o anúncio ${encodeURIComponent(a.titulo)} no ShopFazenda!','_blank')"><i class="ti ti-brand-whatsapp"></i> Chamar no WhatsApp</button>`:''} ${a.telefone?`<button class="tel-btn"><i class="ti ti-phone"></i> ${a.telefone}</button>`:''}</div><div class="anunc-card"><h4>Anunciante</h4><div class="anunc-name">${a.perfis?.nome||'ShopFazenda'}</div><div class="anunc-loc"><i class="ti ti-map-pin"></i> ${a.cidade}, ${a.estado}</div></div><div class="safety-box"><strong>⚠️ Dica de segurança:</strong><br>Nunca faça depósitos sem ver o equipamento pessoalmente.</div></div></div>`;
+  let specs;
+  if(isA){
+    specs=[
+      a.animal_raca?`<div class="spec-item"><div class="spec-label">Raça</div><div class="spec-val">${a.animal_raca}</div></div>`:'',
+      a.animal_classificacao?`<div class="spec-item"><div class="spec-label">Classificação</div><div class="spec-val">${a.animal_classificacao}</div></div>`:'',
+      a.animal_sexo?`<div class="spec-item"><div class="spec-label">Sexo</div><div class="spec-val">${a.animal_sexo}</div></div>`:'',
+      a.animal_quantidade?`<div class="spec-item"><div class="spec-label">Quantidade de Cabeças</div><div class="spec-val">${a.animal_quantidade}</div></div>`:'',
+      a.animal_idade?`<div class="spec-item"><div class="spec-label">Idade Aproximada</div><div class="spec-val">${a.animal_idade}</div></div>`:'',
+      a.animal_peso_medio?`<div class="spec-item"><div class="spec-label">Peso Médio</div><div class="spec-val">${a.animal_peso_medio} kg</div></div>`:'',
+      `<div class="spec-item"><div class="spec-label">Localização</div><div class="spec-val">${a.cidade}, ${a.estado}</div></div>`,
+    ].filter(Boolean).join('');
+  } else {
+    specs=[a.marca?`<div class="spec-item"><div class="spec-label">Marca</div><div class="spec-val">${a.marca}</div></div>`:'',a.modelo?`<div class="spec-item"><div class="spec-label">Modelo</div><div class="spec-val">${a.modelo}</div></div>`:'',a.ano?`<div class="spec-item"><div class="spec-label">Ano</div><div class="spec-val">${a.ano}</div></div>`:'',a.tipo?`<div class="spec-item"><div class="spec-label">Tipo</div><div class="spec-val">${a.tipo}</div></div>`:'',a.conservacao?`<div class="spec-item"><div class="spec-label">Conservação</div><div class="spec-val">${a.conservacao}</div></div>`:'',a.horimetro?`<div class="spec-item"><div class="spec-label">Horímetro/Km</div><div class="spec-val">${a.horimetro}</div></div>`:'',a.tracao?`<div class="spec-item"><div class="spec-label">Tração</div><div class="spec-val">${a.tracao}</div></div>`:'',a.hectares?`<div class="spec-item"><div class="spec-label">Área</div><div class="spec-val">${a.hectares} ha</div></div>`:'',`<div class="spec-item"><div class="spec-label">Localização</div><div class="spec-val">${a.cidade}, ${a.estado}</div></div>`].filter(Boolean).join('');
+  }
+  const videoBtn = (isA && a.video_url) ? `<a href="${a.video_url}" target="_blank" style="display:flex;align-items:center;justify-content:center;gap:6px;background:#3b82f6;color:#fff;padding:9px;border-radius:6px;font-size:13px;font-weight:700;text-decoration:none;margin-bottom:8px;"><i class="ti ti-video"></i> Ver Vídeo</a>` : '';
+  const wppMsg = isA ? `Olá, tenho interesse no anúncio ${a.titulo} anunciado no ShopFazenda.` : `Olá! Vi o anúncio ${a.titulo} no ShopFazenda!`;
+  el.innerHTML=`<div class="det-wrap"><div class="det-left"><div>${mF}${ths}</div><div class="det-specs" style="margin-top:16px;"><h3><i class="ti ti-list-check"></i> ${isA?'Informações':'Especificações'}</h3><div class="spec-grid">${specs}</div></div>${a.descricao?`<div class="det-desc"><h3><i class="ti ti-file-description"></i> Descrição</h3><p>${a.descricao}</p></div>`:''}</div><div class="det-right"><div class="price-card"><span class="prod-tag">${a.tipo}</span><h2>${a.titulo}</h2><div class="big-price">${preco}</div><div class="loc-line"><i class="ti ti-map-pin"></i> ${a.cidade}, ${a.estado}</div>${videoBtn}${wpp?`<button class="wpp-btn" onclick="window.open('https://wa.me/55${wpp}?text=${encodeURIComponent(wppMsg)}','_blank')"><i class="ti ti-brand-whatsapp"></i> ${isA?'Tenho Interesse':'Chamar no WhatsApp'}</button>`:''} ${a.telefone?`<button class="tel-btn"><i class="ti ti-phone"></i> ${a.telefone}</button>`:''}</div><div class="anunc-card"><h4>Anunciante</h4><div class="anunc-name">${a.perfis?.nome||'ShopFazenda'}</div><div class="anunc-loc"><i class="ti ti-map-pin"></i> ${a.cidade}, ${a.estado}</div></div><div class="safety-box"><strong>⚠️ Dica de segurança:</strong><br>Nunca faça depósitos sem ver ${isA?'o lote':'o equipamento'} pessoalmente.</div></div></div>`;
   sb.from('anuncios').update({visualizacoes:(a.visualizacoes||0)+1}).eq('id',id);
   if(typeof gtag!=='undefined')gtag('event','view_item',{item_id:id,item_name:a.titulo,item_category:a.tipo});
 }
@@ -1010,8 +1164,8 @@ async function editarAnuncio(id){
 
 function resetFormAnuncio(){
   document.getElementById('edit-anuncio-id').value='';document.getElementById('form-titulo-pg').textContent='Novo Anúncio';
-  ['an-tipo','an-titulo','an-preco','an-cidade','an-whatsapp','an-telefone','an-descricao','an-horimetro','an-tipo-imovel','an-hectares','an-preco-imovel'].forEach(id=>{const e=document.getElementById(id);if(e)e.value='';});
-  document.getElementById('an-estado').value='MS';document.getElementById('an-marca').innerHTML='<option value="">Selecione o tipo primeiro</option>';document.getElementById('an-marca').disabled=true;document.getElementById('an-modelo').innerHTML='<option value="">Selecione a marca primeiro</option>';document.getElementById('an-modelo').disabled=true;document.getElementById('an-conservacao').value='';document.getElementById('an-tracao').value='';document.getElementById('an-ano').value='';document.getElementById('campos-equipamento').style.display='block';document.getElementById('campos-imovel').style.display='none';fotosUpload=[];fotosUrls=[];document.getElementById('foto-preview-grid').innerHTML='';document.getElementById('form-msg').innerHTML='';document.getElementById('foto-input').value='';
+  ['an-tipo','an-titulo','an-preco','an-cidade','an-whatsapp','an-telefone','an-descricao','an-horimetro','an-tipo-imovel','an-hectares','an-preco-imovel','an-especie','an-raca','an-classificacao','an-sexo','an-quantidade','an-idade','an-peso','an-tipo-preco','an-preco-animal','an-video'].forEach(id=>{const e=document.getElementById(id);if(e)e.value='';});
+  document.getElementById('an-estado').value='MS';document.getElementById('an-marca').innerHTML='<option value="">Selecione o tipo primeiro</option>';document.getElementById('an-marca').disabled=true;document.getElementById('an-modelo').innerHTML='<option value="">Selecione a marca primeiro</option>';document.getElementById('an-modelo').disabled=true;document.getElementById('an-conservacao').value='';document.getElementById('an-tracao').value='';document.getElementById('an-ano').value='';document.getElementById('campos-equipamento').style.display='block';document.getElementById('campos-imovel').style.display='none';document.getElementById('campos-animal').style.display='none';document.getElementById('campo-titulo-manual').classList.remove('campo-oculto');document.getElementById('campo-titulo-auto').classList.add('campo-oculto');document.getElementById('an-titulo-preview').textContent='Preencha os campos abaixo';fotosUpload=[];fotosUrls=[];document.getElementById('foto-preview-grid').innerHTML='';document.getElementById('form-msg').innerHTML='';document.getElementById('foto-input').value='';
 }
 
 function previewFotos(input){fotosUpload=[...fotosUpload,...Array.from(input.files)].slice(0,10);renderFotosExistentes();}
@@ -1044,8 +1198,30 @@ async function verificarAcessoPublicar(){
 
 async function publicarAnuncio(){
   if(!usuarioAtual){abrirAuth('login');return;}
-  const tipo=document.getElementById('an-tipo').value,titulo=document.getElementById('an-titulo').value.trim(),cidade=document.getElementById('an-cidade').value.trim(),whatsapp=document.getElementById('an-whatsapp').value.trim(),msg=document.getElementById('form-msg'),isI=tipo==='Imóvel Rural',preco=isI?document.getElementById('an-preco-imovel').value:document.getElementById('an-preco').value;
-  if(!tipo||!titulo||!preco||!cidade||!whatsapp){msg.innerHTML='<div class="msg error">Preencha todos os campos obrigatórios (*).</div>';return;}
+  const tipo=document.getElementById('an-tipo').value,cidade=document.getElementById('an-cidade').value.trim(),whatsapp=document.getElementById('an-whatsapp').value.trim(),descricao=document.getElementById('an-descricao').value.trim(),msg=document.getElementById('form-msg'),isI=tipo==='Imóvel Rural',isA=tipo==='Animal';
+
+  let titulo='', preco=null;
+
+  if(isA){
+    const especie=document.getElementById('an-especie').value;
+    const raca=document.getElementById('an-raca').value;
+    const classif=document.getElementById('an-classificacao').value;
+    const sexo=document.getElementById('an-sexo').value;
+    const qtd=document.getElementById('an-quantidade').value;
+    const tipoPreco=document.getElementById('an-tipo-preco').value;
+    const precoAnimal=document.getElementById('an-preco-animal').value;
+    if(!especie||!raca||!classif||!sexo||!qtd||!tipoPreco){msg.innerHTML='<div class="msg error">Preencha todos os campos obrigatórios (*) do anúncio de animal.</div>';return;}
+    if(tipoPreco==='Por cabeça' && !precoAnimal){msg.innerHTML='<div class="msg error">Informe o preço por cabeça, ou selecione "A combinar".</div>';return;}
+    if(!cidade||!whatsapp||!descricao){msg.innerHTML='<div class="msg error">Preencha cidade, WhatsApp e descrição.</div>';return;}
+    atualizarTituloAnimal();
+    titulo=document.getElementById('an-titulo-preview').textContent;
+    preco = tipoPreco==='Por cabeça' ? Number(precoAnimal) : null;
+  } else {
+    titulo=document.getElementById('an-titulo').value.trim();
+    preco=isI?document.getElementById('an-preco-imovel').value:document.getElementById('an-preco').value;
+    if(!tipo||!titulo||!preco||!cidade||!whatsapp){msg.innerHTML='<div class="msg error">Preencha todos os campos obrigatórios (*).</div>';return;}
+    preco = Number(preco);
+  }
 
   // Verificar se pode publicar (plano ou período gratuito)
   const editId = document.getElementById('edit-anuncio-id').value;
@@ -1071,7 +1247,10 @@ async function publicarAnuncio(){
     for(let i=0;i<fotosUpload.length;i++){const f=fotosUpload[i],ext=f.name.split('.').pop(),path=`${usuarioAtual.id}/${Date.now()}-${i}.${ext}`;document.getElementById('progress-text').textContent=`Enviando foto ${i+1} de ${fotosUpload.length}...`;document.getElementById('progress-bar').style.width=`${((i+1)/fotosUpload.length)*100}%`;const{error:upE}=await sb.storage.from('fotos-anuncios').upload(path,f);if(!upE){const{data:ud}=sb.storage.from('fotos-anuncios').getPublicUrl(path);todasFotos.push(ud.publicUrl);}}
     document.getElementById('upload-progress').style.display='none';
   }
-  const payload={titulo,tipo,preco:Number(preco),cidade,estado:document.getElementById('an-estado').value,whatsapp,telefone:document.getElementById('an-telefone').value,descricao:document.getElementById('an-descricao').value,fotos:todasFotos,status:'ativo',anunciante_id:usuarioAtual.id,...(isI?{tipo_imovel:document.getElementById('an-tipo-imovel').value,hectares:document.getElementById('an-hectares').value?Number(document.getElementById('an-hectares').value):null,solo:document.getElementById('an-solo').value,aptidao:document.getElementById('an-aptidao').value,infraestrutura:document.getElementById('an-infraestrutura').value}:{marca:document.getElementById('an-marca').value,modelo:document.getElementById('an-modelo').value,ano:document.getElementById('an-ano').value?Number(document.getElementById('an-ano').value):null,conservacao:document.getElementById('an-conservacao').value,horimetro:document.getElementById('an-horimetro').value,tracao:document.getElementById('an-tracao').value})};
+  const payload={titulo,tipo,preco,cidade,estado:document.getElementById('an-estado').value,whatsapp,telefone:document.getElementById('an-telefone').value,descricao,fotos:todasFotos,status:'ativo',anunciante_id:usuarioAtual.id,
+    ...(isI?{tipo_imovel:document.getElementById('an-tipo-imovel').value,hectares:document.getElementById('an-hectares').value?Number(document.getElementById('an-hectares').value):null,solo:document.getElementById('an-solo').value,aptidao:document.getElementById('an-aptidao').value,infraestrutura:document.getElementById('an-infraestrutura').value}
+    :isA?{animal_especie:document.getElementById('an-especie').value,animal_raca:document.getElementById('an-raca').value,animal_classificacao:document.getElementById('an-classificacao').value,animal_sexo:document.getElementById('an-sexo').value,animal_idade:document.getElementById('an-idade').value,animal_quantidade:Number(document.getElementById('an-quantidade').value),animal_peso_medio:document.getElementById('an-peso').value?Number(document.getElementById('an-peso').value):null,animal_tipo_preco:document.getElementById('an-tipo-preco').value,video_url:document.getElementById('an-video').value.trim()||null}
+    :{marca:document.getElementById('an-marca').value,modelo:document.getElementById('an-modelo').value,ano:document.getElementById('an-ano').value?Number(document.getElementById('an-ano').value):null,conservacao:document.getElementById('an-conservacao').value,horimetro:document.getElementById('an-horimetro').value,tracao:document.getElementById('an-tracao').value})};
   let error;if(editId){({error}=await sb.from('anuncios').update(payload).eq('id',editId));}else{({error}=await sb.from('anuncios').insert(payload));}
   btn.disabled=false;btn.innerHTML='<i class="ti ti-check"></i> Publicar Anúncio';
   if(error){msg.innerHTML=`<div class="msg error">Erro: ${error.message}</div>`;return;}
