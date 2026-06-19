@@ -1392,15 +1392,17 @@ async function publicarAnuncio(){
     for(let i=0;i<fotosUpload.length;i++){const f=fotosUpload[i],ext=f.name.split('.').pop(),path=`${usuarioAtual.id}/${Date.now()}-${i}.${ext}`;document.getElementById('progress-text').textContent=`Enviando foto ${i+1} de ${fotosUpload.length}...`;document.getElementById('progress-bar').style.width=`${((i+1)/fotosUpload.length)*100}%`;const{error:upE}=await sb.storage.from('fotos-anuncios').upload(path,f);if(!upE){const{data:ud}=sb.storage.from('fotos-anuncios').getPublicUrl(path);todasFotos.push(ud.publicUrl);}}
     document.getElementById('upload-progress').style.display='none';
   }
-  const payload={titulo,tipo,preco,cidade,estado:document.getElementById('an-estado').value,whatsapp,telefone:document.getElementById('an-telefone').value,descricao,fotos:todasFotos,status:'ativo',anunciante_id:usuarioAtual.id,
+  const payload={titulo,tipo,preco,cidade,estado:document.getElementById('an-estado').value,whatsapp,telefone:document.getElementById('an-telefone').value,descricao,fotos:todasFotos,status:editId?undefined:'pendente',anunciante_id:usuarioAtual.id,
     ...(isI?{tipo_imovel:document.getElementById('an-tipo-imovel').value,hectares:document.getElementById('an-hectares').value?Number(document.getElementById('an-hectares').value):null,solo:document.getElementById('an-solo').value,aptidao:document.getElementById('an-aptidao').value,infraestrutura:document.getElementById('an-infraestrutura').value}
     :isA?{animal_especie:document.getElementById('an-especie').value,animal_raca:document.getElementById('an-raca').value,animal_classificacao:document.getElementById('an-classificacao').value,animal_sexo:document.getElementById('an-sexo').value,animal_idade:document.getElementById('an-idade').value,animal_quantidade:Number(document.getElementById('an-quantidade').value),animal_peso_medio:document.getElementById('an-peso').value?Number(document.getElementById('an-peso').value):null,animal_tipo_preco:document.getElementById('an-tipo-preco').value,video_url:document.getElementById('an-video').value.trim()||null}
     :{marca:document.getElementById('an-marca').value,modelo:document.getElementById('an-modelo').value,ano:document.getElementById('an-ano').value?Number(document.getElementById('an-ano').value):null,conservacao:document.getElementById('an-conservacao').value,horimetro:document.getElementById('an-horimetro').value,tracao:document.getElementById('an-tracao').value})};
   let error;if(editId){({error}=await sb.from('anuncios').update(payload).eq('id',editId));}else{({error}=await sb.from('anuncios').insert(payload));}
   btn.disabled=false;btn.innerHTML='<i class="ti ti-check"></i> Publicar Anúncio';
   if(error){msg.innerHTML=`<div class="msg error">Erro: ${error.message}</div>`;return;}
-  msg.innerHTML='<div class="msg success">✅ Anúncio publicado com sucesso!</div>';
-  setTimeout(()=>goPage('painel'),1500);
+  msg.innerHTML = editId
+    ? '<div class="msg success">✅ Anúncio atualizado com sucesso!</div>'
+    : '<div class="msg success">✅ Anúncio enviado! Ele ficará disponível assim que for aprovado pela nossa equipe (normalmente em poucas horas).</div>';
+  setTimeout(()=>goPage('painel'),2200);
 }
 
 // ===== ADMIN =====
