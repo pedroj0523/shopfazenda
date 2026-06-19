@@ -324,11 +324,13 @@ body { font-family: 'Segoe UI', Tahoma, Arial, sans-serif; background: var(--bg)
         <div class="card-head"><i class="ti ti-search"></i> Buscar</div>
         <div class="card-body">
           <div class="filter-label">Tipo</div>
-          <select class="filter-select" id="f-tipo" onchange="atualizarFiltroMarca('f-marca','f-tipo')">
+          <select class="filter-select" id="f-tipo" onchange="atualizarFiltroMarca('f-marca','f-tipo'); atualizarFiltroModelo('f-modelo','f-tipo','f-marca');">
             <option value="">Todos</option><option>Trator</option><option>Colheitadeira</option><option>Implemento Agrícola</option><option>Pá Carregadeira</option><option>Escavadeira</option><option>Plataforma</option><option>Quadriciclo / UTV</option><option>Imóvel Rural</option>
           </select>
           <div class="filter-label">Marca</div>
-          <select class="filter-select" id="f-marca"><option value="">Todas</option></select>
+          <select class="filter-select" id="f-marca" onchange="atualizarFiltroModelo('f-modelo','f-tipo','f-marca')"><option value="">Todas</option></select>
+          <div class="filter-label">Modelo</div>
+          <select class="filter-select" id="f-modelo"><option value="">Todos</option></select>
           <div class="filter-label">Cidade</div>
           <input class="filter-input" id="f-cidade" placeholder="Ex: Campo Grande">
           <div class="filter-label">Preço máximo</div>
@@ -365,11 +367,13 @@ body { font-family: 'Segoe UI', Tahoma, Arial, sans-serif; background: var(--bg)
         <div class="card-head"><i class="ti ti-search"></i> Filtrar</div>
         <div class="card-body">
           <div class="filter-label">Tipo</div>
-          <select class="filter-select" id="f2-tipo" onchange="atualizarFiltroMarca('f2-marca','f2-tipo')">
+          <select class="filter-select" id="f2-tipo" onchange="atualizarFiltroMarca('f2-marca','f2-tipo'); atualizarFiltroModelo('f2-modelo','f2-tipo','f2-marca');">
             <option value="">Todos</option><option>Trator</option><option>Colheitadeira</option><option>Implemento Agrícola</option><option>Pá Carregadeira</option><option>Escavadeira</option><option>Plataforma</option><option>Quadriciclo / UTV</option><option>Imóvel Rural</option>
           </select>
           <div class="filter-label">Marca</div>
-          <select class="filter-select" id="f2-marca"><option value="">Todas</option></select>
+          <select class="filter-select" id="f2-marca" onchange="atualizarFiltroModelo('f2-modelo','f2-tipo','f2-marca')"><option value="">Todas</option></select>
+          <div class="filter-label">Modelo</div>
+          <select class="filter-select" id="f2-modelo"><option value="">Todos</option></select>
           <div class="filter-label">Cidade</div>
           <input class="filter-input" id="f2-cidade" placeholder="Ex: Campo Grande">
           <div class="filter-label">Preço máximo</div>
@@ -799,6 +803,7 @@ const CATALOGO={
 
 function popularAnos(){const s=document.getElementById('an-ano'),a=new Date().getFullYear();for(let i=a;i>=1970;i--){const o=document.createElement('option');o.value=i;o.textContent=i;s.appendChild(o);}}
 function atualizarFiltroMarca(idM,idT){const t=document.getElementById(idT).value,s=document.getElementById(idM);s.innerHTML='<option value="">Todas</option>';if(t&&CATALOGO[t])Object.keys(CATALOGO[t]).forEach(m=>{const o=document.createElement('option');o.value=m;o.textContent=m;s.appendChild(o);});}
+function atualizarFiltroModelo(idMo,idT,idM){const t=document.getElementById(idT).value,m=document.getElementById(idM).value,s=document.getElementById(idMo);s.innerHTML='<option value="">Todos</option>';if(t&&m&&CATALOGO[t]&&CATALOGO[t][m]){CATALOGO[t][m].forEach(mo=>{const o=document.createElement('option');o.value=mo;o.textContent=mo;s.appendChild(o);});}}
 function onTipoChange(){const t=document.getElementById('an-tipo').value,isI=t==='Imóvel Rural';document.getElementById('campos-equipamento').style.display=isI?'none':'block';document.getElementById('campos-imovel').style.display=isI?'block':'none';const sm=document.getElementById('an-marca'),smo=document.getElementById('an-modelo');sm.innerHTML='<option value="">Selecione a marca</option>';smo.innerHTML='<option value="">Selecione a marca primeiro</option>';if(t&&CATALOGO[t]&&!isI){sm.disabled=false;Object.keys(CATALOGO[t]).forEach(m=>{const o=document.createElement('option');o.value=m;o.textContent=m;sm.appendChild(o);});}else{sm.disabled=true;smo.disabled=true;}}
 function onMarcaChange(){const t=document.getElementById('an-tipo').value,m=document.getElementById('an-marca').value,s=document.getElementById('an-modelo');s.innerHTML='<option value="">Selecione o modelo</option>';s.disabled=true;if(t&&m&&CATALOGO[t]&&CATALOGO[t][m]){s.disabled=false;CATALOGO[t][m].forEach(mo=>{const o=document.createElement('option');o.value=mo;o.textContent=mo;s.appendChild(o);});}}
 
@@ -891,8 +896,8 @@ async function carregarAnuncios(f={}){
   el.innerHTML=`<div class="anuncios-grid">${data.map(renderCard).join('')}</div>`;
 }
 
-function buscarAnuncios(){goPage('anuncios');carregarAnuncios({tipo:document.getElementById('f-tipo').value,marca:document.getElementById('f-marca').value,cidade:document.getElementById('f-cidade').value,preco:document.getElementById('f-preco').value});}
-function buscarAnuncios2(){carregarAnuncios({tipo:document.getElementById('f2-tipo').value,marca:document.getElementById('f2-marca').value,cidade:document.getElementById('f2-cidade').value,preco:document.getElementById('f2-preco').value});}
+function buscarAnuncios(){goPage('anuncios');carregarAnuncios({tipo:document.getElementById('f-tipo').value,marca:document.getElementById('f-marca').value,modelo:document.getElementById('f-modelo').value,cidade:document.getElementById('f-cidade').value,preco:document.getElementById('f-preco').value});}
+function buscarAnuncios2(){carregarAnuncios({tipo:document.getElementById('f2-tipo').value,marca:document.getElementById('f2-marca').value,modelo:document.getElementById('f2-modelo').value,cidade:document.getElementById('f2-cidade').value,preco:document.getElementById('f2-preco').value});}
 
 // ===== BUSCA DETALHADA =====
 function popularAnosFiltro(selectId){
