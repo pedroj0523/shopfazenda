@@ -29,12 +29,13 @@
 }
 body { font-family: 'Segoe UI', Tahoma, Arial, sans-serif; background: var(--bg); color: var(--text); font-size: 14px; line-height: 1.5; }
 .topbar { background: #5a2800; color: #fff; text-align: center; font-size: 12px; padding: 7px 16px; }
-.header { background: var(--white); border-bottom: 1px solid var(--border); padding: 10px 24px; height: 80px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 100; box-shadow: 0 1px 4px rgba(0,0,0,0.06); }
-.logo-area { display: flex; align-items: center; gap: 10px; cursor: pointer; }
+.header { background: var(--white); border-bottom: 1px solid var(--border); padding: 10px 24px; height: 80px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 100; box-shadow: 0 1px 4px rgba(0,0,0,0.06); gap: 10px; }
+.logo-area { display: flex; align-items: center; gap: 10px; cursor: pointer; flex-shrink: 0; }
 .logo-text { font-size: 24px; font-weight: 800; color: var(--verde); letter-spacing: -0.5px; line-height: 1; }
 .logo-text span { color: var(--laranja); }
 .logo-sub { font-size: 9px; color: var(--verde); letter-spacing: 2px; text-transform: uppercase; font-weight: 600; }
-.header-btns { display: flex; gap: 8px; align-items: center; }
+.header-btns { display: flex; gap: 8px; align-items: center; flex-wrap: nowrap; }
+.menu-toggle { display: none; background: none; border: none; font-size: 26px; color: var(--verde); cursor: pointer; padding: 4px 8px; flex-shrink: 0; }
 .btn-outline { border: 1.5px solid var(--verde); color: var(--verde); background: transparent; padding: 7px 14px; border-radius: 6px; font-size: 13px; cursor: pointer; font-weight: 600; display: flex; align-items: center; gap: 5px; transition: all 0.2s; }
 .btn-outline:hover { background: var(--verde); color: #fff; }
 .btn-solid { background: var(--laranja); color: #fff; border: none; padding: 7px 16px; border-radius: 6px; font-size: 13px; cursor: pointer; font-weight: 700; display: flex; align-items: center; gap: 5px; transition: background 0.2s; }
@@ -43,6 +44,7 @@ body { font-family: 'Segoe UI', Tahoma, Arial, sans-serif; background: var(--bg)
 .nav { background: var(--verde); display: flex; overflow-x: auto; }
 .nav a { color: rgba(255,255,255,0.88); text-decoration: none; font-size: 13px; font-weight: 600; padding: 10px 16px; display: block; white-space: nowrap; cursor: pointer; transition: background 0.15s; }
 .nav a:hover, .nav a.active { background: rgba(255,255,255,0.15); color: #fff; }
+.nav-mobile-btns { display: none; }
 .page { display: none; } .page.active { display: block; }
 .hero { background: linear-gradient(135deg, #0b6b4e 0%, var(--verde-dark) 100%); padding: 32px 24px; display: flex; align-items: center; justify-content: space-between; gap: 24px; }
 .hero-text h1 { color: #fff; font-size: 26px; font-weight: 800; line-height: 1.2; max-width: 420px; }
@@ -83,7 +85,7 @@ body { font-family: 'Segoe UI', Tahoma, Arial, sans-serif; background: var(--bg)
 .loading { text-align: center; padding: 32px; color: var(--muted); }
 .spinner { display: inline-block; width: 24px; height: 24px; border: 3px solid var(--border); border-top-color: var(--verde); border-radius: 50%; animation: spin 0.8s linear infinite; margin-bottom: 8px; }
 @keyframes spin { to { transform: rotate(360deg); } }
-.modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center; }
+.modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center; padding: 16px; }
 .modal-overlay.open { display: flex; }
 .modal { background: var(--white); border-radius: 12px; padding: 32px; width: 100%; max-width: 420px; position: relative; max-height: 90vh; overflow-y: auto; }
 .modal h2 { font-size: 20px; font-weight: 800; color: var(--verde); margin-bottom: 6px; }
@@ -270,6 +272,16 @@ body { font-family: 'Segoe UI', Tahoma, Arial, sans-serif; background: var(--bg)
 .adm-spinner { display: inline-block; width: 20px; height: 20px; border: 2px solid var(--adm-border); border-top-color: var(--adm-green); border-radius: 50%; animation: spin 0.8s linear infinite; }
 
 @media (max-width: 768px) {
+  .header { height: 64px; padding: 8px 14px; }
+  .logo-area img { height: 42px !important; }
+  .header-btns { display: none; }
+  .menu-toggle { display: block; }
+  .nav { display: none; flex-direction: column; overflow-x: visible; max-height: calc(100vh - 64px); overflow-y: auto; }
+  .nav.open { display: flex; }
+  .nav a { width: 100%; padding: 13px 18px; border-bottom: 1px solid rgba(255,255,255,0.1); }
+  .nav-mobile-btns { display: flex; flex-direction: column; gap: 8px; padding: 14px 18px; border-top: 1px solid rgba(255,255,255,0.15); margin-top: 4px; }
+  .nav-mobile-btns button, .nav-mobile-btns .btn-outline, .nav-mobile-btns .btn-solid, .nav-mobile-btns .btn-red { width: 100%; justify-content: center; }
+  .nav-mobile-btns .user-email-mobile { color: #fff; font-size: 13px; text-align: center; padding: 6px 0; opacity: 0.9; }
   .hero { flex-direction: column; } .hero-badges { display: none; }
   .body-wrap { flex-direction: column; } .sidebar { width: 100%; }
   .det-wrap { flex-direction: column; } .det-right { width: 100%; } .det-left { max-width: 100%; }
@@ -295,15 +307,17 @@ body { font-family: 'Segoe UI', Tahoma, Arial, sans-serif; background: var(--bg)
     <button class="btn-outline" onclick="abrirAuth('login')"><i class="ti ti-user"></i> Área do Anunciante</button>
     <button class="btn-solid" onclick="abrirAuth('cadastro')"><i class="ti ti-speakerphone"></i> Anuncie Grátis</button>
   </div>
+  <button class="menu-toggle" id="menu-toggle" onclick="toggleMenuMobile()"><i class="ti ti-menu-2"></i></button>
 </div>
 
-<nav class="nav">
+<nav class="nav" id="nav-main">
   <a id="nav-home" class="active" onclick="goPage('home')"><i class="ti ti-home"></i> Página Inicial</a>
   <a id="nav-anuncios" onclick="goPage('anuncios')"><i class="ti ti-tractor"></i> Anúncios</a>
   <a id="nav-anuncie" onclick="goPage('anuncie')"><i class="ti ti-speakerphone"></i> Planos</a>
   <a id="nav-painel" onclick="requireAuth('painel')" style="display:none"><i class="ti ti-layout-dashboard"></i> Meu Painel</a>
   <a id="nav-novo-anuncio" onclick="requireAuth('novo-anuncio')" style="display:none"><i class="ti ti-plus"></i> Novo Anúncio</a>
   <a id="nav-admin" onclick="requireAdmin()" style="display:none;background:rgba(220,38,38,0.3)"><i class="ti ti-shield"></i> Admin</a>
+  <div class="nav-mobile-btns" id="nav-mobile-btns"></div>
 </nav>
 
 <!-- HOME -->
@@ -976,15 +990,20 @@ async function init(){
 function atualizarHeaderLogado(){
   const isA=usuarioAtual.email===ADMIN_EMAIL;
   document.getElementById('header-btns').innerHTML=`<span style="font-size:13px;color:var(--muted);font-weight:600;"><i class="ti ti-user-check"></i> ${usuarioAtual.email}</span>${isA?`<button class="btn-red" onclick="goPage('admin')" style="background:#7f1d1d"><i class="ti ti-shield"></i> Admin</button>`:''}<button class="btn-outline" onclick="goPage('painel')"><i class="ti ti-layout-dashboard"></i> Meu Painel</button><button class="btn-red" onclick="sair()"><i class="ti ti-logout"></i> Sair</button>`;
+  document.getElementById('nav-mobile-btns').innerHTML=`<div class="user-email-mobile"><i class="ti ti-user-check"></i> ${usuarioAtual.email}</div>${isA?`<button class="btn-red" onclick="goPage('admin');fecharMenuMobile();" style="background:#7f1d1d"><i class="ti ti-shield"></i> Admin</button>`:''}<button class="btn-red" onclick="sair();fecharMenuMobile();"><i class="ti ti-logout"></i> Sair</button>`;
   document.getElementById('nav-painel').style.display='block';
   document.getElementById('nav-novo-anuncio').style.display='block';
   document.getElementById('nav-admin').style.display=isA?'block':'none';
 }
 function atualizarHeaderDeslogado(){
   document.getElementById('header-btns').innerHTML=`<button class="btn-outline" onclick="abrirAuth('login')"><i class="ti ti-user"></i> Área do Anunciante</button><button class="btn-solid" onclick="abrirAuth('cadastro')"><i class="ti ti-speakerphone"></i> Anuncie Grátis</button>`;
+  document.getElementById('nav-mobile-btns').innerHTML=`<button class="btn-outline" onclick="abrirAuth('login');fecharMenuMobile();" style="background:#fff;"><i class="ti ti-user"></i> Área do Anunciante</button><button class="btn-solid" onclick="abrirAuth('cadastro');fecharMenuMobile();"><i class="ti ti-speakerphone"></i> Anuncie Grátis</button>`;
   document.getElementById('nav-painel').style.display='none';
   document.getElementById('nav-novo-anuncio').style.display='none';
 }
+
+function toggleMenuMobile(){document.getElementById('nav-main').classList.toggle('open');}
+function fecharMenuMobile(){document.getElementById('nav-main').classList.remove('open');}
 
 function goPage(p){
   document.querySelectorAll('.page').forEach(e=>e.classList.remove('active'));
@@ -992,6 +1011,7 @@ function goPage(p){
   document.getElementById('page-'+p).classList.add('active');
   const n=document.getElementById('nav-'+p);if(n)n.classList.add('active');
   window.scrollTo({top:0,behavior:'smooth'});
+  fecharMenuMobile();
   if(p==='anuncios')carregarAnuncios();
   if(p==='painel')carregarPainel();
   if(p==='novo-anuncio')resetFormAnuncio();
@@ -1028,8 +1048,9 @@ async function fazerCadastro(){
 async function sair(){await sb.auth.signOut();usuarioAtual=null;atualizarHeaderDeslogado();goPage('home');}
 
 async function carregarHomeAnuncios(){
-  const{data}=await sb.from('anuncios').select('*').eq('status','ativo').order('destaque',{ascending:false}).order('created_at',{ascending:false}).limit(12);
+  const{data,error}=await sb.from('anuncios').select('*').eq('status','ativo').order('destaque',{ascending:false}).order('created_at',{ascending:false}).limit(12);
   const el=document.getElementById('home-anuncios');
+  if(error){console.error('Erro ao carregar anúncios da home:',error);el.innerHTML=`<div class="empty-state"><i class="ti ti-alert-triangle"></i><p>Erro ao carregar anúncios.<br><small style="color:#999">${error.message}</small></p></div>`;return;}
   if(!data||data.length===0){el.innerHTML='<div class="empty-state"><i class="ti ti-tractor"></i><p>Seja o primeiro a anunciar!</p></div>';return;}
   el.innerHTML=`<div class="anuncios-grid">${data.map(renderCard).join('')}</div>`;
 }
@@ -1051,7 +1072,8 @@ async function carregarAnuncios(f={}){
   if(f.raca)q=q.eq('animal_raca',f.raca);
   if(f.classificacao)q=q.eq('animal_classificacao',f.classificacao);
   if(f.sexo)q=q.eq('animal_sexo',f.sexo);
-  const{data}=await q;
+  const{data,error}=await q;
+  if(error){console.error('Erro ao buscar anúncios:',error);el.innerHTML=`<div class="empty-state"><i class="ti ti-alert-triangle"></i><p>Erro ao buscar anúncios.<br><small style="color:#999">${error.message}</small></p></div>`;return;}
   if(!data||data.length===0){el.innerHTML='<div class="empty-state"><i class="ti ti-search-off"></i><p>Nenhum anúncio encontrado.</p></div>';return;}
   el.innerHTML=`<div class="anuncios-grid">${data.map(renderCard).join('')}</div>`;
 }
@@ -1213,7 +1235,8 @@ async function carregarPainel(){
   if(!usuarioAtual)return;
   document.getElementById('painel-welcome').textContent=`Bem-vindo, ${usuarioAtual.user_metadata?.nome||usuarioAtual.email}`;
   const el=document.getElementById('meus-anuncios-lista');
-  const{data}=await sb.from('anuncios').select('*').eq('anunciante_id',usuarioAtual.id).order('created_at',{ascending:false});
+  const{data,error}=await sb.from('anuncios').select('*').eq('anunciante_id',usuarioAtual.id).order('created_at',{ascending:false});
+  if(error){console.error('Erro ao carregar painel:',error);el.innerHTML=`<div class="empty-state"><i class="ti ti-alert-triangle"></i><p>Erro ao carregar seus anúncios.<br><small style="color:#999">${error.message}</small></p></div>`;return;}
   if(!data||data.length===0){el.innerHTML=`<div class="empty-state"><i class="ti ti-speakerphone"></i><p>Você ainda não tem anúncios.<br><a onclick="goPage('novo-anuncio')" style="color:var(--verde);cursor:pointer;font-weight:600;">Publicar meu primeiro anúncio →</a></p></div>`;return;}
   el.innerHTML=`<div class="meus-anuncios-grid">${data.map(a=>{const foto=a.fotos&&a.fotos.length>0?`<img src="${a.fotos[0]}" alt="">`:` <i class="ti ti-tractor"></i>`;const preco=a.preco?`R$ ${Number(a.preco).toLocaleString('pt-BR')}`:'Consulte';const sc=a.status==='ativo'?'status-ativo':a.status==='pendente'?'status-pendente':'status-inativo';return `<div class="meu-anuncio-item"><div class="meu-anuncio-thumb">${foto}</div><div class="meu-anuncio-info"><div class="meu-anuncio-titulo">${a.titulo} <span class="meu-anuncio-status ${sc}">${a.status}</span></div><div class="meu-anuncio-preco">${preco} · ${a.cidade}, ${a.estado} · 👁 ${a.visualizacoes||0} views</div></div><div class="meu-anuncio-actions"><button class="btn-sm" onclick="editarAnuncio('${a.id}')"><i class="ti ti-edit"></i> Editar</button><button class="btn-sm danger" onclick="excluirAnuncio('${a.id}')"><i class="ti ti-trash"></i></button></div></div>`;}).join('')}</div>`;
 }
@@ -1408,7 +1431,8 @@ async function carregarAdmAnuncios(){
   const st=document.getElementById('adm-f-status')?.value||'',tp=document.getElementById('adm-f-tipo')?.value||'';
   let q=sb.from('anuncios').select('*, perfis(nome,email)').order('created_at',{ascending:false});
   if(st)q=q.eq('status',st);if(tp)q=q.eq('tipo',tp);
-  const{data}=await q;
+  const{data,error}=await q;
+  if(error){console.error('Erro admin anuncios:',error);el.innerHTML=`<tr><td colspan="7" style="text-align:center;color:#ef4444;padding:20px">Erro: ${error.message}</td></tr>`;return;}
   if(!data||data.length===0){el.innerHTML=`<tr><td colspan="7" style="text-align:center;color:var(--adm-muted);padding:20px">Nenhum anúncio encontrado.</td></tr>`;return;}
   el.innerHTML=data.map(a=>{const preco=a.preco?`R$ ${Number(a.preco).toLocaleString('pt-BR')}`:'-',bc=a.status==='ativo'?'b-green':a.status==='pendente'?'b-yellow':a.status==='rejeitado'?'b-red':'b-gray',dt=a.created_at?new Date(a.created_at).toLocaleDateString('pt-BR'):'-';return`<tr><td><div style="font-weight:600;font-size:12px">${a.titulo}</div><div style="font-size:11px;color:var(--adm-muted)">${preco} · ${a.cidade||''},${a.estado||''}</div></td><td><span class="adm-badge b-blue" style="font-size:10px">${a.tipo||'-'}</span></td><td><div style="font-size:12px;font-weight:600">${a.perfis?.nome||'-'}</div><div style="font-size:11px;color:var(--adm-muted)">${a.perfis?.email||''}</div></td><td style="color:#6366f1;font-weight:700">👁 ${a.visualizacoes||0}</td><td><span class="adm-badge ${bc}">${a.status}</span></td><td style="font-size:11px;color:var(--adm-muted)">${dt}</td><td><div class="adm-act">${a.status!=='ativo'?`<button class="act-ok" onclick="admAprovar('${a.id}')">Aprovar</button>`:''} ${a.status!=='rejeitado'?`<button class="act-warn" onclick="admRejeitar('${a.id}')">Rejeitar</button>`:''} <button class="act-del" onclick="admDelAnuncio('${a.id}')"><i class="ti ti-trash"></i></button></div></td></tr>`;}).join('');
 }
