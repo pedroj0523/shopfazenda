@@ -336,6 +336,12 @@ body { font-family: 'Segoe UI', Tahoma, Arial, sans-serif; background: var(--bg)
           <button class="filter-btn" onclick="buscarAnuncios()"><i class="ti ti-search"></i> Buscar</button>
         </div>
       </div>
+      <div class="card" style="cursor:pointer;" onclick="abrirBuscaDetalhada()">
+        <div class="card-body" style="display:flex;align-items:center;gap:8px;padding:12px 14px;">
+          <i class="ti ti-file-search" style="font-size:18px;color:var(--verde);"></i>
+          <span style="font-size:13px;font-weight:700;color:var(--verde);">Busca Detalhada</span>
+        </div>
+      </div>
     </div>
     <div class="main-content">
       <div class="lancamento-box">
@@ -369,6 +375,12 @@ body { font-family: 'Segoe UI', Tahoma, Arial, sans-serif; background: var(--bg)
           <div class="filter-label">Preço máximo</div>
           <input class="filter-input" id="f2-preco" type="number" placeholder="Ex: 500000">
           <button class="filter-btn" onclick="buscarAnuncios2()"><i class="ti ti-search"></i> Filtrar</button>
+        </div>
+      </div>
+      <div class="card" style="cursor:pointer;" onclick="abrirBuscaDetalhada()">
+        <div class="card-body" style="display:flex;align-items:center;gap:8px;padding:12px 14px;">
+          <i class="ti ti-file-search" style="font-size:18px;color:var(--verde);"></i>
+          <span style="font-size:13px;font-weight:700;color:var(--verde);">Busca Detalhada</span>
         </div>
       </div>
     </div>
@@ -633,6 +645,65 @@ body { font-family: 'Segoe UI', Tahoma, Arial, sans-serif; background: var(--bg)
   </div>
 </div>
 
+<!-- MODAL BUSCA DETALHADA -->
+<div class="modal-overlay" id="modal-busca-detalhada">
+  <div class="modal" style="max-width:560px;">
+    <button class="modal-close" onclick="fecharBuscaDetalhada()">×</button>
+    <h2><i class="ti ti-file-search"></i> Busca Detalhada</h2>
+    <p>Use os filtros abaixo para encontrar exatamente o que procura.</p>
+    <div class="form-row">
+      <div class="form-group">
+        <label>Tipo</label>
+        <select id="bd-tipo" onchange="atualizarFiltroMarca('bd-marca','bd-tipo'); onTipoChangeBD();">
+          <option value="">Todos</option><option>Trator</option><option>Colheitadeira</option><option>Implemento Agrícola</option><option>Pá Carregadeira</option><option>Escavadeira</option><option>Plataforma</option><option>Quadriciclo / UTV</option><option>Imóvel Rural</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Marca</label>
+        <select id="bd-marca" onchange="onMarcaChangeBD()"><option value="">Todas</option></select>
+      </div>
+    </div>
+    <div class="form-group">
+      <label>Modelo</label>
+      <select id="bd-modelo"><option value="">Todos</option></select>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>Ano de</label>
+        <select id="bd-ano-de"><option value="">Qualquer</option></select>
+      </div>
+      <div class="form-group">
+        <label>Ano até</label>
+        <select id="bd-ano-ate"><option value="">Qualquer</option></select>
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>Preço de (R$)</label>
+        <input type="number" id="bd-preco-de" placeholder="Ex: 50000">
+      </div>
+      <div class="form-group">
+        <label>Preço até (R$)</label>
+        <input type="number" id="bd-preco-ate" placeholder="Ex: 500000">
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>Tração</label>
+        <select id="bd-tracao">
+          <option value="">Qualquer</option><option>2x2</option><option>4x2</option><option>4x4</option><option>Esteira</option><option>Não se aplica</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Cidade</label>
+        <input type="text" id="bd-cidade" placeholder="Ex: Campo Grande">
+      </div>
+    </div>
+    <button class="form-submit" onclick="buscarAnunciosDetalhado()"><i class="ti ti-search"></i> Buscar</button>
+    <div class="auth-toggle"><a onclick="limparBuscaDetalhada()">Limpar filtros</a></div>
+  </div>
+</div>
+
 <!-- LIGHTBOX -->
 <div id="lightbox" onclick="fecharLightbox()">
   <button id="lightbox-close" onclick="fecharLightbox()">×</button>
@@ -749,7 +820,16 @@ async function carregarAnuncios(f={}){
   const el=document.getElementById('lista-anuncios');
   el.innerHTML='<div class="loading"><div class="spinner"></div><div>Carregando...</div></div>';
   let q=sb.from('anuncios').select('*').eq('status','ativo').order('destaque',{ascending:false}).order('created_at',{ascending:false});
-  if(f.tipo)q=q.eq('tipo',f.tipo);if(f.marca)q=q.eq('marca',f.marca);if(f.cidade)q=q.ilike('cidade',`%${f.cidade}%`);if(f.preco)q=q.lte('preco',f.preco);
+  if(f.tipo)q=q.eq('tipo',f.tipo);
+  if(f.marca)q=q.eq('marca',f.marca);
+  if(f.modelo)q=q.eq('modelo',f.modelo);
+  if(f.cidade)q=q.ilike('cidade',`%${f.cidade}%`);
+  if(f.preco)q=q.lte('preco',f.preco);
+  if(f.precoDe)q=q.gte('preco',f.precoDe);
+  if(f.precoAte)q=q.lte('preco',f.precoAte);
+  if(f.anoDe)q=q.gte('ano',f.anoDe);
+  if(f.anoAte)q=q.lte('ano',f.anoAte);
+  if(f.tracao)q=q.eq('tracao',f.tracao);
   const{data}=await q;
   if(!data||data.length===0){el.innerHTML='<div class="empty-state"><i class="ti ti-search-off"></i><p>Nenhum anúncio encontrado.</p></div>';return;}
   el.innerHTML=`<div class="anuncios-grid">${data.map(renderCard).join('')}</div>`;
@@ -757,6 +837,62 @@ async function carregarAnuncios(f={}){
 
 function buscarAnuncios(){goPage('anuncios');carregarAnuncios({tipo:document.getElementById('f-tipo').value,marca:document.getElementById('f-marca').value,cidade:document.getElementById('f-cidade').value,preco:document.getElementById('f-preco').value});}
 function buscarAnuncios2(){carregarAnuncios({tipo:document.getElementById('f2-tipo').value,marca:document.getElementById('f2-marca').value,cidade:document.getElementById('f2-cidade').value,preco:document.getElementById('f2-preco').value});}
+
+// ===== BUSCA DETALHADA =====
+function popularAnosFiltro(selectId){
+  const s=document.getElementById(selectId);
+  if(!s||s.options.length>1)return; // já populado
+  const a=new Date().getFullYear();
+  for(let i=a;i>=1970;i--){const o=document.createElement('option');o.value=i;o.textContent=i;s.appendChild(o);}
+}
+
+function abrirBuscaDetalhada(){
+  document.getElementById('modal-busca-detalhada').classList.add('open');
+  popularAnosFiltro('bd-ano-de');
+  popularAnosFiltro('bd-ano-ate');
+}
+function fecharBuscaDetalhada(){document.getElementById('modal-busca-detalhada').classList.remove('open');}
+
+function onTipoChangeBD(){
+  const t=document.getElementById('bd-tipo').value;
+  const selModelo=document.getElementById('bd-modelo');
+  selModelo.innerHTML='<option value="">Todos</option>';
+}
+
+function onMarcaChangeBD(){
+  const t=document.getElementById('bd-tipo').value,m=document.getElementById('bd-marca').value;
+  const s=document.getElementById('bd-modelo');
+  s.innerHTML='<option value="">Todos</option>';
+  if(t&&m&&CATALOGO[t]&&CATALOGO[t][m]){
+    CATALOGO[t][m].forEach(mo=>{const o=document.createElement('option');o.value=mo;o.textContent=mo;s.appendChild(o);});
+  }
+}
+
+function limparBuscaDetalhada(){
+  ['bd-tipo','bd-marca','bd-modelo','bd-ano-de','bd-ano-ate','bd-preco-de','bd-preco-ate','bd-tracao','bd-cidade'].forEach(id=>{
+    const el=document.getElementById(id);
+    if(el)el.value='';
+  });
+  document.getElementById('bd-marca').innerHTML='<option value="">Todas</option>';
+  document.getElementById('bd-modelo').innerHTML='<option value="">Todos</option>';
+}
+
+function buscarAnunciosDetalhado(){
+  const f={
+    tipo:document.getElementById('bd-tipo').value,
+    marca:document.getElementById('bd-marca').value,
+    modelo:document.getElementById('bd-modelo').value,
+    anoDe:document.getElementById('bd-ano-de').value,
+    anoAte:document.getElementById('bd-ano-ate').value,
+    precoDe:document.getElementById('bd-preco-de').value,
+    precoAte:document.getElementById('bd-preco-ate').value,
+    tracao:document.getElementById('bd-tracao').value,
+    cidade:document.getElementById('bd-cidade').value,
+  };
+  fecharBuscaDetalhada();
+  goPage('anuncios');
+  carregarAnuncios(f);
+}
 
 function renderCard(a){
   const foto=a.fotos&&a.fotos.length>0?`<img src="${a.fotos[0]}" alt="${a.titulo}" loading="lazy">`:`<div class="anuncio-thumb"><i class="ti ti-tractor"></i></div>`;
@@ -1030,7 +1166,7 @@ function verificarRetornoPagamento(){
   else if(st==='falha'){window.history.replaceState({},'','/');alert('❌ O pagamento não foi concluído. Tente novamente.');goPage('anuncie');}
 }
 
-document.addEventListener('keydown',e=>{if(document.getElementById('lightbox').style.display==='flex'){if(e.key==='ArrowRight')nextPhoto();if(e.key==='ArrowLeft')prevPhoto();if(e.key==='Escape')fecharLightbox();}if(e.key==='Escape')fecharAuth();});
+document.addEventListener('keydown',e=>{if(document.getElementById('lightbox').style.display==='flex'){if(e.key==='ArrowRight')nextPhoto();if(e.key==='ArrowLeft')prevPhoto();if(e.key==='Escape')fecharLightbox();}if(e.key==='Escape'){fecharAuth();fecharBuscaDetalhada();}});
 init();
 </script>
 </body>
