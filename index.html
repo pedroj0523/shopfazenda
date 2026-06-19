@@ -29,7 +29,7 @@
 }
 body { font-family: 'Segoe UI', Tahoma, Arial, sans-serif; background: var(--bg); color: var(--text); font-size: 14px; line-height: 1.5; }
 .topbar { background: #5a2800; color: #fff; text-align: center; font-size: 12px; padding: 7px 16px; }
-.header { background: var(--white); border-bottom: 1px solid var(--border); padding: 10px 24px; height: 70px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 100; box-shadow: 0 1px 4px rgba(0,0,0,0.06); }
+.header { background: var(--white); border-bottom: 1px solid var(--border); padding: 10px 24px; height: 90px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 100; box-shadow: 0 1px 4px rgba(0,0,0,0.06); }
 .logo-area { display: flex; align-items: center; gap: 10px; cursor: pointer; }
 .logo-text { font-size: 24px; font-weight: 800; color: var(--verde); letter-spacing: -0.5px; line-height: 1; }
 .logo-text span { color: var(--laranja); }
@@ -288,7 +288,7 @@ body { font-family: 'Segoe UI', Tahoma, Arial, sans-serif; background: var(--bg)
 
 <div class="header">
   <div class="logo-area" onclick="goPage('home')">
-    <img src="/Shopfazenda.svg" alt="ShopFazenda" style="height:48px;width:auto;">
+    <img src="/Shopfazenda.svg" alt="ShopFazenda" style="height:70px;width:auto;max-width:280px;object-fit:contain;">
   </div>
   <div class="header-btns" id="header-btns">
     <button class="btn-outline" onclick="abrirAuth('login')"><i class="ti ti-user"></i> Área do Anunciante</button>
