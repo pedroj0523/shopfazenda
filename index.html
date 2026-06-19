@@ -473,19 +473,18 @@ body { font-family: 'Segoe UI', Tahoma, Arial, sans-serif; background: var(--bg)
       <div class="form-section-title">Informações do Equipamento</div>
       <div class="form-row">
         <div class="form-group"><label>Tipo *</label><select id="an-tipo" onchange="onTipoChange()" required><option value="">Selecione o tipo...</option><option>Trator</option><option>Colheitadeira</option><option>Implemento Agrícola</option><option>Pá Carregadeira</option><option>Escavadeira</option><option>Plataforma</option><option>Quadriciclo / UTV</option><option>Imóvel Rural</option><option>Animal</option></select></div>
-        <div class="form-group" id="campo-titulo-manual"><label>Título do Anúncio *</label><input type="text" id="an-titulo" placeholder="Ex: Trator John Deere 5078E 2020"></div>
-        <div class="form-group campo-oculto" id="campo-titulo-auto">
+        <div class="form-group">
           <label>Título do Anúncio (gerado automaticamente)</label>
-          <div style="background:var(--light);border:1.5px solid var(--border);border-radius:6px;padding:10px 12px;font-size:13px;font-weight:700;color:var(--verde);" id="an-titulo-preview">Preencha os campos abaixo</div>
+          <div style="background:var(--light);border:1.5px solid var(--border);border-radius:6px;padding:10px 12px;font-size:13px;font-weight:700;color:var(--verde);min-height:39px;display:flex;align-items:center;" id="an-titulo-preview">Preencha os campos abaixo</div>
         </div>
       </div>
       <div id="campos-equipamento">
         <div class="form-row">
-          <div class="form-group"><label>Marca *</label><select id="an-marca" onchange="onMarcaChange()" disabled><option value="">Selecione o tipo primeiro</option></select></div>
-          <div class="form-group"><label>Modelo *</label><select id="an-modelo" disabled><option value="">Selecione a marca primeiro</option></select></div>
+          <div class="form-group"><label>Marca *</label><select id="an-marca" onchange="onMarcaChange(); atualizarTituloGeral();" disabled><option value="">Selecione o tipo primeiro</option></select></div>
+          <div class="form-group"><label>Modelo *</label><select id="an-modelo" disabled onchange="atualizarTituloGeral()"><option value="">Selecione a marca primeiro</option></select></div>
         </div>
         <div class="form-row-3">
-          <div class="form-group"><label>Ano de Fabricação</label><select id="an-ano"><option value="">Selecione</option></select></div>
+          <div class="form-group"><label>Ano de Fabricação</label><select id="an-ano" onchange="atualizarTituloGeral()"><option value="">Selecione</option></select></div>
           <div class="form-group"><label>Preço (R$) *</label><input type="number" id="an-preco" placeholder="Ex: 250000"></div>
           <div class="form-group"><label>Conservação</label><select id="an-conservacao"><option value="">Selecione</option><option>Novo (0 km)</option><option>Seminovo</option><option>Usado - Bom Estado</option><option>Usado - Aceita Reparos</option></select></div>
         </div>
@@ -496,8 +495,8 @@ body { font-family: 'Segoe UI', Tahoma, Arial, sans-serif; background: var(--bg)
       </div>
       <div id="campos-imovel" class="campo-oculto">
         <div class="form-row">
-          <div class="form-group"><label>Tipo de Imóvel *</label><select id="an-tipo-imovel"><option value="">Selecione</option><option>Fazenda</option><option>Sítio</option><option>Chácara</option><option>Granja</option><option>Área Rural</option><option>Rancho</option></select></div>
-          <div class="form-group"><label>Área (hectares) *</label><input type="number" id="an-hectares" placeholder="Ex: 500"></div>
+          <div class="form-group"><label>Tipo de Imóvel *</label><select id="an-tipo-imovel" onchange="atualizarTituloGeral()"><option value="">Selecione</option><option>Fazenda</option><option>Sítio</option><option>Chácara</option><option>Granja</option><option>Área Rural</option><option>Rancho</option></select></div>
+          <div class="form-group"><label>Área (hectares) *</label><input type="number" id="an-hectares" placeholder="Ex: 500" oninput="atualizarTituloGeral()"></div>
         </div>
         <div class="form-row">
           <div class="form-group"><label>Preço (R$) *</label><input type="number" id="an-preco-imovel" placeholder="Ex: 2500000"></div>
@@ -931,14 +930,33 @@ function onTipoChange(){
   document.getElementById('campos-equipamento').style.display=(isI||isA)?'none':'block';
   document.getElementById('campos-imovel').style.display=isI?'block':'none';
   document.getElementById('campos-animal').style.display=isA?'block':'none';
-  document.getElementById('campo-titulo-manual').classList.toggle('campo-oculto',isA);
-  document.getElementById('campo-titulo-auto').classList.toggle('campo-oculto',!isA);
   const sm=document.getElementById('an-marca'),smo=document.getElementById('an-modelo');
   sm.innerHTML='<option value="">Selecione a marca</option>';smo.innerHTML='<option value="">Selecione a marca primeiro</option>';
   if(t&&CATALOGO[t]&&!isI&&!isA){sm.disabled=false;Object.keys(CATALOGO[t]).forEach(m=>{const o=document.createElement('option');o.value=m;o.textContent=m;sm.appendChild(o);});}else{sm.disabled=true;smo.disabled=true;}
   if(isA){
     document.getElementById('an-especie').value='';
     onEspecieChange();
+  }
+  atualizarTituloGeral();
+}
+
+function atualizarTituloGeral(){
+  const t=document.getElementById('an-tipo').value;
+  if(t==='Animal'){ atualizarTituloAnimal(); return; }
+  const preview=document.getElementById('an-titulo-preview');
+  if(t==='Imóvel Rural'){
+    const tipoImovel=document.getElementById('an-tipo-imovel').value;
+    const hectares=document.getElementById('an-hectares').value;
+    if(!tipoImovel){ preview.textContent='Preencha os campos acima para gerar o título'; return; }
+    preview.textContent = `${tipoImovel}${hectares?` ${hectares} ha`:''}`;
+  } else if(t){
+    const marca=document.getElementById('an-marca').value;
+    const modelo=document.getElementById('an-modelo').value;
+    const ano=document.getElementById('an-ano').value;
+    if(!marca||!modelo){ preview.textContent='Selecione marca e modelo para gerar o título'; return; }
+    preview.textContent = `${marca} ${modelo}${ano?' '+ano:''}`;
+  } else {
+    preview.textContent='Preencha os campos abaixo';
   }
 }
 
@@ -1248,16 +1266,45 @@ async function editarAnuncio(id){
   goPage('novo-anuncio');
   document.getElementById('edit-anuncio-id').value=a.id;document.getElementById('form-titulo-pg').textContent='Editar Anúncio';
   document.getElementById('an-tipo').value=a.tipo||'';onTipoChange();
-  setTimeout(()=>{if(a.marca){document.getElementById('an-marca').value=a.marca;onMarcaChange();}setTimeout(()=>{if(a.modelo)document.getElementById('an-modelo').value=a.modelo;},50);},50);
-  ['an-titulo','an-horimetro','an-cidade','an-whatsapp','an-telefone','an-descricao'].forEach(f=>{document.getElementById(f).value=a[f.replace('an-','')]||'';});
-  document.getElementById('an-ano').value=a.ano||'';document.getElementById('an-preco').value=a.preco||'';document.getElementById('an-conservacao').value=a.conservacao||'';document.getElementById('an-tracao').value=a.tracao||'';document.getElementById('an-estado').value=a.estado||'MS';
+  if(a.tipo==='Animal'){
+    document.getElementById('an-especie').value=a.animal_especie||'';onEspecieChange();
+    setTimeout(()=>{
+      document.getElementById('an-raca').value=a.animal_raca||'';
+      document.getElementById('an-classificacao').value=a.animal_classificacao||'';
+      document.getElementById('an-sexo').value=a.animal_sexo||'';
+      document.getElementById('an-quantidade').value=a.animal_quantidade||'';
+      document.getElementById('an-idade').value=a.animal_idade||'';
+      document.getElementById('an-peso').value=a.animal_peso_medio||'';
+      document.getElementById('an-tipo-preco').value=a.animal_tipo_preco||'';onTipoPrecoChange();
+      document.getElementById('an-preco-animal').value=a.preco||'';
+      document.getElementById('an-video').value=a.video_url||'';
+      atualizarTituloAnimal();
+    },50);
+  } else if(a.tipo==='Imóvel Rural'){
+    document.getElementById('an-tipo-imovel').value=a.tipo_imovel||'';
+    document.getElementById('an-hectares').value=a.hectares||'';
+    document.getElementById('an-preco-imovel').value=a.preco||'';
+    document.getElementById('an-solo').value=a.solo||'';
+    document.getElementById('an-aptidao').value=a.aptidao||'';
+    document.getElementById('an-infraestrutura').value=a.infraestrutura||'';
+    atualizarTituloGeral();
+  } else {
+    setTimeout(()=>{if(a.marca){document.getElementById('an-marca').value=a.marca;onMarcaChange();}setTimeout(()=>{if(a.modelo)document.getElementById('an-modelo').value=a.modelo;atualizarTituloGeral();},50);},50);
+    document.getElementById('an-preco').value=a.preco||'';
+    document.getElementById('an-conservacao').value=a.conservacao||'';
+    document.getElementById('an-tracao').value=a.tracao||'';
+    document.getElementById('an-horimetro').value=a.horimetro||'';
+  }
+  ['an-cidade','an-whatsapp','an-telefone','an-descricao'].forEach(f=>{document.getElementById(f).value=a[f.replace('an-','')]||'';});
+  document.getElementById('an-ano').value=a.ano||'';document.getElementById('an-estado').value=a.estado||'MS';
   fotosUrls=a.fotos||[];renderFotosExistentes();
 }
 
 function resetFormAnuncio(){
   document.getElementById('edit-anuncio-id').value='';document.getElementById('form-titulo-pg').textContent='Novo Anúncio';
-  ['an-tipo','an-titulo','an-preco','an-cidade','an-whatsapp','an-telefone','an-descricao','an-horimetro','an-tipo-imovel','an-hectares','an-preco-imovel','an-especie','an-raca','an-classificacao','an-sexo','an-quantidade','an-idade','an-peso','an-tipo-preco','an-preco-animal','an-video'].forEach(id=>{const e=document.getElementById(id);if(e)e.value='';});
-  document.getElementById('an-estado').value='MS';document.getElementById('an-marca').innerHTML='<option value="">Selecione o tipo primeiro</option>';document.getElementById('an-marca').disabled=true;document.getElementById('an-modelo').innerHTML='<option value="">Selecione a marca primeiro</option>';document.getElementById('an-modelo').disabled=true;document.getElementById('an-conservacao').value='';document.getElementById('an-tracao').value='';document.getElementById('an-ano').value='';document.getElementById('campos-equipamento').style.display='block';document.getElementById('campos-imovel').style.display='none';document.getElementById('campos-animal').style.display='none';document.getElementById('campo-titulo-manual').classList.remove('campo-oculto');document.getElementById('campo-titulo-auto').classList.add('campo-oculto');document.getElementById('an-titulo-preview').textContent='Preencha os campos abaixo';fotosUpload=[];fotosUrls=[];document.getElementById('foto-preview-grid').innerHTML='';document.getElementById('form-msg').innerHTML='';document.getElementById('foto-input').value='';
+  ['an-preco','an-cidade','an-whatsapp','an-telefone','an-descricao','an-horimetro','an-tipo-imovel','an-hectares','an-preco-imovel','an-especie','an-raca','an-classificacao','an-sexo','an-quantidade','an-idade','an-peso','an-tipo-preco','an-preco-animal','an-video'].forEach(id=>{const e=document.getElementById(id);if(e)e.value='';});
+  document.getElementById('an-tipo').value='';
+  document.getElementById('an-estado').value='MS';document.getElementById('an-marca').innerHTML='<option value="">Selecione o tipo primeiro</option>';document.getElementById('an-marca').disabled=true;document.getElementById('an-modelo').innerHTML='<option value="">Selecione a marca primeiro</option>';document.getElementById('an-modelo').disabled=true;document.getElementById('an-conservacao').value='';document.getElementById('an-tracao').value='';document.getElementById('an-ano').value='';document.getElementById('campos-equipamento').style.display='block';document.getElementById('campos-imovel').style.display='none';document.getElementById('campos-animal').style.display='none';document.getElementById('an-titulo-preview').textContent='Preencha os campos abaixo';fotosUpload=[];fotosUrls=[];document.getElementById('foto-preview-grid').innerHTML='';document.getElementById('form-msg').innerHTML='';document.getElementById('foto-input').value='';
 }
 
 function previewFotos(input){fotosUpload=[...fotosUpload,...Array.from(input.files)].slice(0,10);renderFotosExistentes();}
@@ -1309,9 +1356,15 @@ async function publicarAnuncio(){
     titulo=document.getElementById('an-titulo-preview').textContent;
     preco = tipoPreco==='Por cabeça' ? Number(precoAnimal) : null;
   } else {
-    titulo=document.getElementById('an-titulo').value.trim();
+    const marca=document.getElementById('an-marca').value;
+    const modelo=document.getElementById('an-modelo').value;
     preco=isI?document.getElementById('an-preco-imovel').value:document.getElementById('an-preco').value;
-    if(!tipo||!titulo||!preco||!cidade||!whatsapp){msg.innerHTML='<div class="msg error">Preencha todos os campos obrigatórios (*).</div>';return;}
+    if(!tipo){msg.innerHTML='<div class="msg error">Selecione o tipo do anúncio.</div>';return;}
+    if(!isI && (!marca||!modelo)){msg.innerHTML='<div class="msg error">Selecione marca e modelo.</div>';return;}
+    if(isI && !document.getElementById('an-tipo-imovel').value){msg.innerHTML='<div class="msg error">Selecione o tipo de imóvel.</div>';return;}
+    if(!preco||!cidade||!whatsapp){msg.innerHTML='<div class="msg error">Preencha todos os campos obrigatórios (*).</div>';return;}
+    atualizarTituloGeral();
+    titulo=document.getElementById('an-titulo-preview').textContent;
     preco = Number(preco);
   }
 
