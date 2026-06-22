@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>ShopFazenda — Conectando Vendas para o Agronegócio</title>
-<meta name="description" content="O maior marketplace do agronegócio de Mato Grosso do Sul.">
+<meta name="description" content="O Marketplace do Agronegócio — Compre e venda tratores, colheitadeiras, implementos, animais e imóveis rurais. 0% de comissão.">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <!-- Google Analytics 4 -->
@@ -80,6 +80,24 @@ body { font-family: 'Segoe UI', Tahoma, Arial, sans-serif; background: var(--bg)
 .lancamento-box h3 { font-size: 16px; font-weight: 800; margin-bottom: 4px; }
 .lancamento-box p { font-size: 13px; opacity: 0.92; }
 .lancamento-btn { background: #fff; color: var(--laranja); border: none; padding: 9px 20px; border-radius: 6px; font-weight: 700; font-size: 13px; cursor: pointer; white-space: nowrap; }
+/* Categorias banner */
+.categorias-grid { display: grid; grid-template-columns: repeat(5,1fr); gap: 10px; margin-bottom: 14px; }
+.categoria-card { background: var(--white); border: 1.5px solid var(--border); border-radius: 10px; padding: 14px 8px; text-align: center; cursor: pointer; transition: all 0.2s; }
+.categoria-card:hover { border-color: var(--verde); background: #f0fdf4; transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
+.categoria-card i { font-size: 28px; color: var(--verde); display: block; margin-bottom: 6px; }
+.categoria-card .cat-animal i { color: #b45309; }
+.categoria-card span { font-size: 11px; font-weight: 700; color: var(--text); text-transform: uppercase; letter-spacing: 0.4px; line-height: 1.3; display: block; }
+/* Banner animais */
+.banner-animais { background: linear-gradient(135deg, #78350f, #b45309); border-radius: 10px; padding: 18px 22px; margin-bottom: 14px; color: #fff; display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+.banner-animais h3 { font-size: 15px; font-weight: 800; margin-bottom: 4px; }
+.banner-animais p { font-size: 12.5px; opacity: 0.92; }
+.banner-animais-btn { background: #fff; color: #b45309; border: none; padding: 8px 18px; border-radius: 6px; font-weight: 700; font-size: 13px; cursor: pointer; white-space: nowrap; flex-shrink: 0; }
+/* Banner credibilidade */
+.credibilidade-strip { display: flex; gap: 12px; margin-bottom: 14px; }
+.cred-item { background: var(--white); border: 1px solid var(--border); border-radius: 8px; padding: 12px 14px; flex: 1; display: flex; align-items: center; gap: 10px; }
+.cred-item i { font-size: 20px; color: var(--verde); flex-shrink: 0; }
+.cred-item strong { font-size: 12.5px; font-weight: 700; display: block; color: var(--text); }
+.cred-item span { font-size: 11px; color: var(--muted); }
 .empty-state { text-align: center; padding: 48px 24px; color: var(--muted); }
 .empty-state i { font-size: 48px; display: block; margin-bottom: 12px; color: #ccc; }
 .loading { text-align: center; padding: 32px; color: var(--muted); }
@@ -317,6 +335,11 @@ body { font-family: 'Segoe UI', Tahoma, Arial, sans-serif; background: var(--bg)
   .adm-grid2, .adm-grid3 { grid-template-columns: 1fr; }
   .adm-layout { flex-direction: column; }
   .adm-sidebar { width: 100%; height: auto; position: relative; top: 0; }
+  .categorias-grid { grid-template-columns: repeat(3,1fr); gap: 8px; }
+  .credibilidade-strip { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .lancamento-box { flex-direction: column; text-align: center; }
+  .banner-animais { flex-direction: column; text-align: center; }
+  .banner-animais-btn { width: 100%; }
 }
 </style>
 </head>
@@ -349,13 +372,13 @@ body { font-family: 'Segoe UI', Tahoma, Arial, sans-serif; background: var(--bg)
 <div id="page-home" class="page active">
   <div class="hero">
     <div class="hero-text">
-      <h1>O marketplace do <span>agronegócio</span> de Mato Grosso do Sul</h1>
-      <p>Compre e venda tratores, colheitadeiras, implementos e muito mais com segurança e rapidez. <strong>Sem comissão sobre a venda</strong> — você paga só pelo anúncio.</p>
+      <h1>O Marketplace do <span>Agronegócio</span></h1>
+      <p>Compre e venda tratores, colheitadeiras, implementos, animais e muito mais com segurança e rapidez. <strong>Sem comissão sobre a venda</strong> — você paga só pelo anúncio.</p>
     </div>
     <div class="hero-badges">
-      <div class="hero-badge"><div class="n">MS</div><div class="l">Foco Regional</div></div>
       <div class="hero-badge"><div class="n">100%</div><div class="l">Agronegócio</div></div>
       <div class="hero-badge" style="border-color:rgba(245,166,35,0.5);background:rgba(245,166,35,0.12);"><div class="n">0%</div><div class="l">de Comissão</div></div>
+      <div class="hero-badge"><div class="n">0</div><div class="l">Custo pra Buscar</div></div>
     </div>
   </div>
   <div class="body-wrap">
@@ -394,12 +417,45 @@ body { font-family: 'Segoe UI', Tahoma, Arial, sans-serif; background: var(--bg)
       </div>
     </div>
     <div class="main-content">
+
+      <!-- Banner lançamento -->
       <div class="lancamento-box">
         <div><h3>🚀 Lançamento ShopFazenda — Anuncie Grátis por 3 meses!</h3><p>Os primeiros anunciantes não pagam nada por 3 meses. Aproveite e garanta seu espaço!</p></div>
         <button class="lancamento-btn" onclick="abrirAuth('cadastro')">Quero Anunciar Agora</button>
       </div>
+
+      <!-- Banner credibilidade -->
+      <div class="credibilidade-strip">
+        <div class="cred-item"><i class="ti ti-pig-money"></i><div><strong>0% de Comissão</strong><span>Você paga só pelo anúncio</span></div></div>
+        <div class="cred-item"><i class="ti ti-shield-check"></i><div><strong>Anúncio Verificado</strong><span>Aprovação pela nossa equipe</span></div></div>
+        <div class="cred-item"><i class="ti ti-brand-whatsapp"></i><div><strong>Contato Direto</strong><span>Comprador fala com o vendedor</span></div></div>
+        <div class="cred-item"><i class="ti ti-search"></i><div><strong>Busca Gratuita</strong><span>Encontre sem pagar nada</span></div></div>
+      </div>
+
+      <!-- Categorias -->
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
+        <h3 style="font-size:14px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;">Buscar por categoria</h3>
+      </div>
+      <div class="categorias-grid">
+        <div class="categoria-card" onclick="buscarCategoria('Trator')"><i class="ti ti-tractor"></i><span>Tratores</span></div>
+        <div class="categoria-card" onclick="buscarCategoria('Colheitadeira')"><i class="ti ti-garden-cart"></i><span>Colheitadeiras</span></div>
+        <div class="categoria-card" onclick="buscarCategoria('Implemento Agrícola')"><i class="ti ti-tool"></i><span>Implementos</span></div>
+        <div class="categoria-card" onclick="buscarCategoria('Imóvel Rural')"><i class="ti ti-home-2"></i><span>Imóveis Rurais</span></div>
+        <div class="categoria-card" onclick="buscarCategoria('Animal')" style="border-color:#b45309;"><i class="ti ti-paw" style="color:#b45309;"></i><span style="color:#b45309;">Animais</span></div>
+      </div>
+
+      <!-- Banner animais -->
+      <div class="banner-animais">
+        <div>
+          <h3>🐄 Compra e venda de lotes de bovinos</h3>
+          <p>Bezerros, garrotes, novilhas, bois e vacas — encontre ou anuncie seu lote com facilidade</p>
+        </div>
+        <button class="banner-animais-btn" onclick="buscarCategoria('Animal')">Ver Animais →</button>
+      </div>
+
+      <!-- Destaques -->
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
-        <h3 style="font-size:15px;font-weight:700;">⭐ Produtos em Destaque</h3>
+        <h3 style="font-size:15px;font-weight:700;">⭐ Anúncios em Destaque</h3>
         <a onclick="goPage('anuncios')" style="font-size:13px;color:var(--verde);cursor:pointer;font-weight:600;">Ver todos →</a>
       </div>
       <div id="home-anuncios"><div class="loading"><div class="spinner"></div><div>Carregando anúncios...</div></div></div>
@@ -1316,6 +1372,13 @@ function onFiltroTipoChange(prefix){
   }
 }
 
+function buscarCategoria(tipo){
+  goPage('anuncios');
+  // Atualiza o filtro de tipo na página de anúncios
+  const sel=document.getElementById('f2-tipo');
+  if(sel){sel.value=tipo;onFiltroTipoChange('f2');}
+  carregarAnuncios({tipo});
+}
 function buscarAnuncios(){goPage('anuncios');const isA=document.getElementById('f-tipo').value==='Animal';carregarAnuncios({tipo:document.getElementById('f-tipo').value,marca:isA?'':document.getElementById('f-marca').value,modelo:isA?'':document.getElementById('f-modelo').value,raca:isA?document.getElementById('f-raca').value:'',classificacao:isA?document.getElementById('f-classificacao').value:'',cidade:document.getElementById('f-cidade').value,preco:document.getElementById('f-preco').value});}
 function buscarAnuncios2(){const isA=document.getElementById('f2-tipo').value==='Animal';carregarAnuncios({tipo:document.getElementById('f2-tipo').value,marca:isA?'':document.getElementById('f2-marca').value,modelo:isA?'':document.getElementById('f2-modelo').value,raca:isA?document.getElementById('f2-raca').value:'',classificacao:isA?document.getElementById('f2-classificacao').value:'',cidade:document.getElementById('f2-cidade').value,preco:document.getElementById('f2-preco').value});}
 
