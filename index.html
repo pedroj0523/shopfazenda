@@ -75,7 +75,7 @@ body { font-family: 'Segoe UI', Tahoma, Arial, sans-serif; background: var(--bg)
 .anuncio-preco { font-size: 15px; font-weight: 800; color: var(--verde); }
 .anuncio-loc { font-size: 11px; color: var(--muted); margin-top: 3px; display: flex; align-items: center; gap: 3px; }
 .anuncio-card-wrap { position: relative; }
-.destaque-badge { position: absolute; top: 8px; right: 8px; background: #f5a623; color: #fff; font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 10px; }
+.destaque-badge { position: absolute; top: 0; left: 0; background: linear-gradient(135deg, #e07c1a, #c96a10); color: #fff; font-size: 10px; font-weight: 800; padding: 4px 10px; border-radius: 0 0 8px 0; letter-spacing: 0.5px; text-transform: uppercase; z-index: 2; }
 .lancamento-box { background: linear-gradient(135deg, var(--laranja), var(--laranja-dark)); border-radius: 10px; padding: 20px 24px; margin-bottom: 14px; color: #fff; display: flex; align-items: center; justify-content: space-between; gap: 16px; }
 .lancamento-box h3 { font-size: 16px; font-weight: 800; margin-bottom: 4px; }
 .lancamento-box p { font-size: 13px; opacity: 0.92; }
@@ -162,20 +162,45 @@ body { font-family: 'Segoe UI', Tahoma, Arial, sans-serif; background: var(--bg)
 .anunc-loc { font-size: 12px; color: var(--muted); margin-top: 3px; display: flex; align-items: center; gap: 3px; }
 .safety-box { background: #fffbeb; border: 1px solid #fde68a; border-radius: 8px; padding: 12px 14px; font-size: 12px; color: #78350f; line-height: 1.5; }
 .prod-tag { background: var(--laranja); color: #fff; font-size: 11px; font-weight: 700; padding: 3px 10px; border-radius: 10px; display: inline-block; margin-bottom: 6px; }
-.anuncie-wrap { padding: 24px; max-width: 900px; margin: 0 auto; }
+.anuncie-wrap { padding: 24px; max-width: 980px; margin: 0 auto; }
 .anuncie-hero { text-align: center; padding: 28px; background: linear-gradient(135deg, var(--verde), var(--verde-dark)); border-radius: 10px; color: #fff; margin-bottom: 24px; }
 .anuncie-hero h2 { font-size: 22px; font-weight: 800; margin-bottom: 6px; }
-.planos-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 24px; }
-.plano { background: var(--white); border: 2px solid var(--border); border-radius: 10px; padding: 20px; position: relative; }
-.plano.destaque { border-color: var(--verde); }
-.plano-badge { background: var(--verde); color: #fff; font-size: 11px; font-weight: 700; padding: 3px 10px; border-radius: 10px; position: absolute; top: -12px; left: 50%; transform: translateX(-50%); white-space: nowrap; }
-.plano h3 { font-size: 16px; font-weight: 800; margin-bottom: 4px; }
+.planos-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 16px; margin-bottom: 24px; }
+.plano { background: var(--white); border: 2px solid var(--border); border-radius: 12px; padding: 0; position: relative; overflow: hidden; display: flex; flex-direction: column; }
+.plano.destaque { border-color: #b8860b; box-shadow: 0 8px 32px rgba(184,134,11,0.15); transform: translateY(-4px); }
+.plano-badge { font-size: 11px; font-weight: 700; padding: 3px 12px; border-radius: 10px; position: absolute; top: -13px; left: 50%; transform: translateX(-50%); white-space: nowrap; z-index: 2; }
+.plano-header { padding: 20px 20px 16px; text-align: center; }
+.plano-header h3 { font-size: 18px; font-weight: 800; color: #fff; margin-bottom: 2px; }
+.plano-header .plano-sub { font-size: 11px; color: rgba(255,255,255,0.8); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px; }
+.plano-header .preco-parcela { font-size: 12px; color: rgba(255,255,255,0.85); margin-bottom: 2px; }
+.plano-header .preco { font-size: 30px; font-weight: 900; color: #fff; line-height: 1.1; }
+.plano-header .preco span { font-size: 15px; font-weight: 700; vertical-align: top; margin-top: 4px; display: inline-block; }
+.plano-header .preco-avista { font-size: 11px; color: rgba(255,255,255,0.7); margin-top: 2px; }
+.plano-periodo { display: inline-block; background: rgba(255,255,255,0.2); border-radius: 20px; padding: 3px 12px; font-size: 11px; font-weight: 700; color: #fff; margin-top: 8px; }
 .preco { font-size: 28px; font-weight: 800; color: var(--verde); margin: 8px 0 2px; }
 .periodo { font-size: 12px; color: var(--muted); margin-bottom: 14px; }
-.plano ul { list-style: none; margin-bottom: 16px; }
-.plano ul li { font-size: 13px; padding: 4px 0; display: flex; align-items: center; gap: 6px; }
-.plano ul li i { color: var(--verde); font-size: 14px; }
-.plano-btn { width: 100%; background: var(--verde); color: #fff; border: none; padding: 10px; border-radius: 6px; font-size: 13px; font-weight: 700; cursor: pointer; }
+.plano-body { padding: 16px 18px 18px; flex: 1; display: flex; flex-direction: column; }
+.plano-desc { font-size: 12px; color: var(--muted); text-align: center; margin-bottom: 12px; font-style: italic; line-height: 1.4; }
+.plano ul { list-style: none; margin-bottom: 14px; flex: 1; }
+.plano ul li { font-size: 12.5px; padding: 5px 0; display: flex; align-items: center; gap: 7px; border-bottom: 1px solid var(--border); color: var(--text); }
+.plano ul li:last-child { border-bottom: none; }
+.plano ul li.li-no { color: #bbb; }
+.plano ul li i.ok { color: var(--verde); font-size: 14px; flex-shrink: 0; }
+.plano ul li i.no { color: #ddd; font-size: 14px; flex-shrink: 0; }
+.plano-btn { width: 100%; border: none; padding: 11px; border-radius: 7px; font-size: 13px; font-weight: 800; cursor: pointer; transition: opacity 0.2s; }
+.plano-btn:hover { opacity: 0.88; }
+.plano-bronze .plano-header { background: linear-gradient(135deg, #7c6230, #a07840); }
+.plano-bronze .plano-badge { background: #7c6230; color: #fff; }
+.plano-bronze .plano-btn { background: #7c6230; color: #fff; }
+.plano-prata .plano-header { background: linear-gradient(135deg, #5a6e7e, #7a90a2); }
+.plano-prata .plano-badge { background: #5a6e7e; color: #fff; }
+.plano-prata .plano-btn { background: #5a6e7e; color: #fff; }
+.plano-ouro .plano-header { background: linear-gradient(135deg, #a07008, #c8900a); }
+.plano-ouro .plano-badge { background: #c8900a; color: #fff; }
+.plano-ouro .plano-btn { background: linear-gradient(135deg, #a07008, #c8900a); color: #fff; }
+.plano-revenda .plano-header { background: linear-gradient(135deg, #0e7a5a, #084d38); }
+.plano-revenda .plano-badge { background: #0e7a5a; color: #fff; }
+.plano-revenda .plano-btn { background: linear-gradient(135deg, #0e7a5a, #084d38); color: #fff; }
 #lightbox { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.92); z-index: 2000; align-items: center; justify-content: center; flex-direction: column; }
 #lightbox img { max-width: 90vw; max-height: 80vh; object-fit: contain; border-radius: 6px; }
 #lightbox-count { color: rgba(255,255,255,0.7); font-size: 13px; margin-top: 12px; }
@@ -432,15 +457,117 @@ body { font-family: 'Segoe UI', Tahoma, Arial, sans-serif; background: var(--bg)
 <!-- PLANOS -->
 <div id="page-anuncie" class="page">
   <div class="anuncie-wrap">
-    <div class="anuncie-hero"><h2>Anuncie no ShopFazenda</h2><p>Alcance produtores rurais e compradores de MS e todo o Brasil.<br>Os primeiros anunciantes têm <strong>3 meses GRÁTIS</strong>!</p></div>
-    <div id="planos-msg" style="margin-bottom:14px;"></div>
-    <div class="planos-grid" style="grid-template-columns:repeat(4,1fr);">
-      <div class="plano"><h3>Bronze</h3><div class="preco">R$ 79</div><div class="periodo">30 dias · 1 anúncio</div><ul><li><i class="ti ti-check"></i> 1 anúncio ativo</li><li><i class="ti ti-check"></i> 10 fotos por anúncio</li><li><i class="ti ti-check"></i> Contato via WhatsApp</li><li><i class="ti ti-check"></i> Listagem padrão</li><li><i class="ti ti-check"></i> Pague 1x ou 2x</li></ul><button class="plano-btn" onclick="assinarPlano('bronze')">Anunciar Agora</button></div>
-      <div class="plano"><h3>Prata</h3><div class="preco">R$ 149</div><div class="periodo">60 dias · 3 anúncios</div><ul><li><i class="ti ti-check"></i> 3 anúncios ativos</li><li><i class="ti ti-check"></i> 10 fotos por anúncio</li><li><i class="ti ti-check"></i> Contato via WhatsApp</li><li><i class="ti ti-check"></i> Listagem padrão</li><li><i class="ti ti-check"></i> Pague 1x ou 3x</li></ul><button class="plano-btn" onclick="assinarPlano('prata')">Anunciar Agora</button></div>
-      <div class="plano destaque"><div class="plano-badge">Mais Popular</div><h3>Ouro</h3><div class="preco">R$ 249</div><div class="periodo">120 dias · 10 anúncios</div><ul><li><i class="ti ti-check"></i> 10 anúncios ativos</li><li><i class="ti ti-check"></i> 20 fotos por anúncio</li><li><i class="ti ti-check"></i> Destaque na listagem</li><li><i class="ti ti-check"></i> Relatório de acessos</li><li><i class="ti ti-check"></i> Pague 1x ou 3x</li></ul><button class="plano-btn" onclick="assinarPlano('ouro')">Anunciar Agora</button></div>
-      <div class="plano"><h3>Revenda</h3><div class="preco">R$ 349</div><div class="periodo">180 dias · Ilimitado</div><ul><li><i class="ti ti-check"></i> Anúncios ilimitados</li><li><i class="ti ti-check"></i> Fotos ilimitadas</li><li><i class="ti ti-check"></i> Topo da listagem</li><li><i class="ti ti-check"></i> Página da revenda</li><li><i class="ti ti-check"></i> Pague 1x ou 3x</li></ul><button class="plano-btn" onclick="assinarPlano('revenda')">Anunciar Agora</button></div>
+    <div class="anuncie-hero">
+      <h2>Anuncie no ShopFazenda</h2>
+      <p>Alcance produtores rurais e compradores de MS e todo o Brasil.<br>Pagamento único — sem cobrança recorrente. <strong>0% de comissão sobre a venda!</strong></p>
     </div>
-    <div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:8px;padding:16px 20px;font-size:13px;color:#166534;"><strong>🔒 Pagamento seguro via Mercado Pago</strong> — Cartão de crédito em até 3x ou Pix à vista.</div>
+    <div id="planos-msg" style="margin-bottom:14px;"></div>
+
+    <div class="planos-grid">
+
+      <!-- BRONZE -->
+      <div class="plano plano-bronze">
+        <div class="plano-header">
+          <h3>Bronze</h3>
+          <div class="plano-sub">Para começar</div>
+          <div class="preco-parcela">2x de</div>
+          <div class="preco"><span>R$</span> 40</div>
+          <div class="preco-avista">ou R$ 79 à vista</div>
+          <div class="plano-periodo">📅 30 dias</div>
+        </div>
+        <div class="plano-body">
+          <div class="plano-desc">Ideal para quem tem 1 item pra vender rápido</div>
+          <ul>
+            <li><i class="ti ti-check ok"></i> 1 anúncio ativo</li>
+            <li><i class="ti ti-check ok"></i> 10 fotos por anúncio</li>
+            <li><i class="ti ti-check ok"></i> Contato via WhatsApp</li>
+            <li><i class="ti ti-check ok"></i> Aprovação em até 24h</li>
+            <li class="li-no"><i class="ti ti-x no"></i> Destaque na listagem</li>
+            <li class="li-no"><i class="ti ti-x no"></i> Topo da busca</li>
+          </ul>
+          <button class="plano-btn" onclick="assinarPlano('bronze')">Anunciar Agora</button>
+        </div>
+      </div>
+
+      <!-- PRATA -->
+      <div class="plano plano-prata">
+        <div class="plano-header">
+          <h3>Prata</h3>
+          <div class="plano-sub">Mais anúncios</div>
+          <div class="preco-parcela">3x de</div>
+          <div class="preco"><span>R$</span> 50</div>
+          <div class="preco-avista">ou R$ 149 à vista</div>
+          <div class="plano-periodo">📅 60 dias</div>
+        </div>
+        <div class="plano-body">
+          <div class="plano-desc">Para quem tem mais de um item ou quer mais tempo</div>
+          <ul>
+            <li><i class="ti ti-check ok"></i> 3 anúncios ativos</li>
+            <li><i class="ti ti-check ok"></i> 10 fotos por anúncio</li>
+            <li><i class="ti ti-check ok"></i> Contato via WhatsApp</li>
+            <li><i class="ti ti-check ok"></i> Aprovação em até 24h</li>
+            <li class="li-no"><i class="ti ti-x no"></i> Destaque na listagem</li>
+            <li class="li-no"><i class="ti ti-x no"></i> Topo da busca</li>
+          </ul>
+          <button class="plano-btn" onclick="assinarPlano('prata')">Anunciar Agora</button>
+        </div>
+      </div>
+
+      <!-- OURO -->
+      <div class="plano plano-ouro destaque">
+        <div class="plano-badge">⭐ Mais Popular</div>
+        <div class="plano-header">
+          <h3>Ouro</h3>
+          <div class="plano-sub">Melhor custo-benefício</div>
+          <div class="preco-parcela">3x de</div>
+          <div class="preco"><span>R$</span> 83</div>
+          <div class="preco-avista">ou R$ 249 à vista</div>
+          <div class="plano-periodo">📅 120 dias</div>
+        </div>
+        <div class="plano-body">
+          <div class="plano-desc">Para produtores com vários itens — seus anúncios se destacam</div>
+          <ul>
+            <li><i class="ti ti-check ok"></i> 5 anúncios ativos</li>
+            <li><i class="ti ti-check ok"></i> 10 fotos por anúncio</li>
+            <li><i class="ti ti-check ok"></i> Contato via WhatsApp</li>
+            <li><i class="ti ti-check ok"></i> Aprovação em até 24h</li>
+            <li><i class="ti ti-check ok"></i> ⭐ Destaque na listagem</li>
+            <li class="li-no"><i class="ti ti-x no"></i> Topo da busca</li>
+          </ul>
+          <button class="plano-btn" onclick="assinarPlano('ouro')">Anunciar Agora</button>
+        </div>
+      </div>
+
+      <!-- REVENDA -->
+      <div class="plano plano-revenda">
+        <div class="plano-header">
+          <h3>Revenda</h3>
+          <div class="plano-sub">Para revendas</div>
+          <div class="preco-parcela">3x de</div>
+          <div class="preco"><span>R$</span> 117</div>
+          <div class="preco-avista">ou R$ 349 à vista</div>
+          <div class="plano-periodo">📅 180 dias</div>
+        </div>
+        <div class="plano-body">
+          <div class="plano-desc">Para revendas e concessionárias — máxima visibilidade</div>
+          <ul>
+            <li><i class="ti ti-check ok"></i> 15 anúncios ativos</li>
+            <li><i class="ti ti-check ok"></i> 10 fotos por anúncio</li>
+            <li><i class="ti ti-check ok"></i> Contato via WhatsApp</li>
+            <li><i class="ti ti-check ok"></i> Aprovação em até 24h</li>
+            <li><i class="ti ti-check ok"></i> ⭐ Destaque na listagem</li>
+            <li><i class="ti ti-check ok"></i> 🔝 Topo da busca</li>
+          </ul>
+          <button class="plano-btn" onclick="assinarPlano('revenda')">Anunciar Agora</button>
+        </div>
+      </div>
+
+    </div>
+
+    <div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:8px;padding:14px 20px;font-size:13px;color:#166534;display:flex;align-items:center;gap:10px;">
+      <i class="ti ti-lock" style="font-size:18px;"></i>
+      <span><strong>Pagamento único e seguro via Mercado Pago</strong> — Cartão de crédito, Pix ou boleto. Sem cobrança recorrente. 0% de comissão sobre suas vendas.</span>
+    </div>
   </div>
 </div>
 
@@ -1481,7 +1608,13 @@ async function publicarAnuncio(){
     for(let i=0;i<fotosUpload.length;i++){const f=fotosUpload[i],ext=f.name.split('.').pop(),path=`${usuarioAtual.id}/${Date.now()}-${i}.${ext}`;document.getElementById('progress-text').textContent=`Enviando foto ${i+1} de ${fotosUpload.length}...`;document.getElementById('progress-bar').style.width=`${((i+1)/fotosUpload.length)*100}%`;const{error:upE}=await sb.storage.from('fotos-anuncios').upload(path,f);if(!upE){const{data:ud}=sb.storage.from('fotos-anuncios').getPublicUrl(path);todasFotos.push(ud.publicUrl);}}
     document.getElementById('upload-progress').style.display='none';
   }
-  const payload={titulo,tipo,preco,cidade,estado:document.getElementById('an-estado').value,whatsapp,telefone:document.getElementById('an-telefone').value,descricao,fotos:todasFotos,status:editId?undefined:'pendente',anunciante_id:usuarioAtual.id,
+  // Verificar se anunciante tem plano com destaque (Ouro ou Revenda)
+  let temDestaque=false;
+  if(!editId){
+    const{data:perfil}=await sb.from('perfis').select('tipo_plano').eq('id',usuarioAtual.id).single();
+    temDestaque=['ouro','revenda'].includes(perfil?.tipo_plano);
+  }
+  const payload={titulo,tipo,preco,cidade,estado:document.getElementById('an-estado').value,whatsapp,telefone:document.getElementById('an-telefone').value,descricao,fotos:todasFotos,status:editId?undefined:'pendente',destaque:editId?undefined:temDestaque,anunciante_id:usuarioAtual.id,
     ...(isI?{tipo_imovel:document.getElementById('an-tipo-imovel').value,hectares:document.getElementById('an-hectares').value?Number(document.getElementById('an-hectares').value):null,solo:document.getElementById('an-solo').value,aptidao:document.getElementById('an-aptidao').value,infraestrutura:document.getElementById('an-infraestrutura').value}
     :isA?{animal_especie:document.getElementById('an-especie').value,animal_raca:document.getElementById('an-raca').value,animal_classificacao:document.getElementById('an-classificacao').value,animal_sexo:document.getElementById('an-sexo').value,animal_idade:document.getElementById('an-idade').value,animal_quantidade:Number(document.getElementById('an-quantidade').value),animal_peso_medio:document.getElementById('an-peso').value?Number(document.getElementById('an-peso').value):null,animal_tipo_preco:document.getElementById('an-tipo-preco').value,video_url:document.getElementById('an-video').value.trim()||null}
     :{marca:document.getElementById('an-marca').value,modelo:document.getElementById('an-modelo').value,ano:document.getElementById('an-ano').value?Number(document.getElementById('an-ano').value):null,conservacao:document.getElementById('an-conservacao').value,horimetro:document.getElementById('an-horimetro').value,tracao:document.getElementById('an-tracao').value})};
@@ -1640,7 +1773,20 @@ async function assinarPlano(plano){
 
 function verificarRetornoPagamento(){
   const p=new URLSearchParams(window.location.search),st=p.get('pagamento'),plano=p.get('plano'),uid=p.get('uid');
-  if(st==='sucesso'&&uid&&plano){const dias={bronze:30,prata:60,ouro:120,revenda:180}[plano]||30,exp=new Date();exp.setDate(exp.getDate()+dias);sb.from('perfis').update({tipo_plano:plano,plano_ativo:true,plano_expira_em:exp.toISOString()}).eq('id',uid).then(()=>{window.history.replaceState({},'','/');setTimeout(()=>{alert('✅ Pagamento confirmado! Seu plano foi ativado.');goPage('novo-anuncio');},500);});}
+  if(st==='sucesso'&&uid&&plano){
+    const dias={bronze:30,prata:60,ouro:120,revenda:180}[plano]||30;
+    const exp=new Date();exp.setDate(exp.getDate()+dias);
+    // Planos Ouro e Revenda ativam destaque nos anúncios existentes do anunciante
+    const temDestaque=['ouro','revenda'].includes(plano);
+    sb.from('perfis').update({tipo_plano:plano,plano_ativo:true,plano_expira_em:exp.toISOString()}).eq('id',uid).then(async()=>{
+      if(temDestaque){
+        // Ativa destaque em todos os anúncios ativos do anunciante
+        await sb.from('anuncios').update({destaque:true}).eq('anunciante_id',uid).eq('status','ativo');
+      }
+      window.history.replaceState({},'','/');
+      setTimeout(()=>{alert('✅ Pagamento confirmado! Seu plano foi ativado.');goPage('novo-anuncio');},500);
+    });
+  }
   else if(st==='falha'){window.history.replaceState({},'','/');alert('❌ O pagamento não foi concluído. Tente novamente.');goPage('anuncie');}
 }
 
