@@ -167,8 +167,8 @@ body { font-family: 'Segoe UI', Tahoma, Arial, sans-serif; background: var(--bg)
 .anuncie-hero h2 { font-size: 22px; font-weight: 800; margin-bottom: 6px; }
 .planos-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 16px; margin-bottom: 24px; }
 .plano { background: var(--white); border: 2px solid var(--border); border-radius: 12px; padding: 0; position: relative; overflow: hidden; display: flex; flex-direction: column; }
-.plano.destaque { border-color: #b8860b; box-shadow: 0 8px 32px rgba(184,134,11,0.15); transform: translateY(-4px); }
-.plano-badge { font-size: 11px; font-weight: 700; padding: 3px 12px; border-radius: 10px; position: absolute; top: -13px; left: 50%; transform: translateX(-50%); white-space: nowrap; z-index: 2; }
+.plano.destaque { border-color: #b8860b; box-shadow: 0 8px 32px rgba(184,134,11,0.2); }
+.plano-badge { font-size: 11px; font-weight: 700; padding: 4px 14px; border-radius: 20px; display: inline-block; white-space: nowrap; margin-bottom: 6px; }
 .plano-header { padding: 20px 20px 16px; text-align: center; }
 .plano-header h3 { font-size: 18px; font-weight: 800; color: #fff; margin-bottom: 2px; }
 .plano-header .plano-sub { font-size: 11px; color: rgba(255,255,255,0.8); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px; }
@@ -180,7 +180,7 @@ body { font-family: 'Segoe UI', Tahoma, Arial, sans-serif; background: var(--bg)
 .preco { font-size: 28px; font-weight: 800; color: var(--verde); margin: 8px 0 2px; }
 .periodo { font-size: 12px; color: var(--muted); margin-bottom: 14px; }
 .plano-body { padding: 16px 18px 18px; flex: 1; display: flex; flex-direction: column; }
-.plano-desc { font-size: 12px; color: var(--muted); text-align: center; margin-bottom: 12px; font-style: italic; line-height: 1.4; }
+.plano-desc { display: none; }
 .plano ul { list-style: none; margin-bottom: 14px; flex: 1; }
 .plano ul li { font-size: 12.5px; padding: 5px 0; display: flex; align-items: center; gap: 7px; border-bottom: 1px solid var(--border); color: var(--text); }
 .plano ul li:last-child { border-bottom: none; }
@@ -476,7 +476,7 @@ body { font-family: 'Segoe UI', Tahoma, Arial, sans-serif; background: var(--bg)
           <div class="plano-periodo">📅 30 dias</div>
         </div>
         <div class="plano-body">
-          <div class="plano-desc">Ideal para quem tem 1 item pra vender rápido</div>
+          <div class="plano-desc"></div>
           <ul>
             <li><i class="ti ti-check ok"></i> 1 anúncio ativo</li>
             <li><i class="ti ti-check ok"></i> 10 fotos por anúncio</li>
@@ -500,7 +500,7 @@ body { font-family: 'Segoe UI', Tahoma, Arial, sans-serif; background: var(--bg)
           <div class="plano-periodo">📅 60 dias</div>
         </div>
         <div class="plano-body">
-          <div class="plano-desc">Para quem tem mais de um item ou quer mais tempo</div>
+          <div class="plano-desc"></div>
           <ul>
             <li><i class="ti ti-check ok"></i> 3 anúncios ativos</li>
             <li><i class="ti ti-check ok"></i> 10 fotos por anúncio</li>
@@ -515,8 +515,8 @@ body { font-family: 'Segoe UI', Tahoma, Arial, sans-serif; background: var(--bg)
 
       <!-- OURO -->
       <div class="plano plano-ouro destaque">
-        <div class="plano-badge">⭐ Mais Popular</div>
         <div class="plano-header">
+          <div class="plano-badge">⭐ Mais Popular</div>
           <h3>Ouro</h3>
           <div class="plano-sub">Melhor custo-benefício</div>
           <div class="preco-parcela">3x de</div>
@@ -525,14 +525,14 @@ body { font-family: 'Segoe UI', Tahoma, Arial, sans-serif; background: var(--bg)
           <div class="plano-periodo">📅 120 dias</div>
         </div>
         <div class="plano-body">
-          <div class="plano-desc">Para produtores com vários itens — seus anúncios se destacam</div>
+          <div class="plano-desc"></div>
           <ul>
             <li><i class="ti ti-check ok"></i> 5 anúncios ativos</li>
             <li><i class="ti ti-check ok"></i> 10 fotos por anúncio</li>
             <li><i class="ti ti-check ok"></i> Contato via WhatsApp</li>
             <li><i class="ti ti-check ok"></i> Aprovação em até 24h</li>
             <li><i class="ti ti-check ok"></i> ⭐ Destaque na listagem</li>
-            <li class="li-no"><i class="ti ti-x no"></i> Topo da busca</li>
+            <li><i class="ti ti-check ok"></i> 🔝 Topo da busca</li>
           </ul>
           <button class="plano-btn" onclick="assinarPlano('ouro')">Anunciar Agora</button>
         </div>
@@ -549,7 +549,7 @@ body { font-family: 'Segoe UI', Tahoma, Arial, sans-serif; background: var(--bg)
           <div class="plano-periodo">📅 180 dias</div>
         </div>
         <div class="plano-body">
-          <div class="plano-desc">Para revendas e concessionárias — máxima visibilidade</div>
+          <div class="plano-desc"></div>
           <ul>
             <li><i class="ti ti-check ok"></i> 15 anúncios ativos</li>
             <li><i class="ti ti-check ok"></i> 10 fotos por anúncio</li>
