@@ -3,7 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ShopFazenda — Conectando Vendas para o Agronegócio</title>
+<title>ShopFazenda — O Marketplace do Agronegócio</title>
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="shortcut icon" href="/favicon.svg">
 <meta name="description" content="O Marketplace do Agronegócio — Compre e venda tratores, colheitadeiras, implementos, animais e imóveis rurais. 0% de comissão.">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -438,10 +440,10 @@ body { font-family: 'Segoe UI', Tahoma, Arial, sans-serif; background: var(--bg)
       </div>
       <div class="categorias-grid">
         <div class="categoria-card" onclick="buscarCategoria('Trator')"><i class="ti ti-tractor"></i><span>Tratores</span></div>
-        <div class="categoria-card" onclick="buscarCategoria('Colheitadeira')"><i class="ti ti-garden-cart"></i><span>Colheitadeiras</span></div>
+        <div class="categoria-card" onclick="buscarCategoria('Colheitadeira')"><i class="ti ti-stack-2"></i><span>Colheitadeiras</span></div>
         <div class="categoria-card" onclick="buscarCategoria('Implemento Agrícola')"><i class="ti ti-tool"></i><span>Implementos</span></div>
-        <div class="categoria-card" onclick="buscarCategoria('Imóvel Rural')"><i class="ti ti-home-2"></i><span>Imóveis Rurais</span></div>
-        <div class="categoria-card" onclick="buscarCategoria('Animal')" style="border-color:#b45309;"><i class="ti ti-paw" style="color:#b45309;"></i><span style="color:#b45309;">Animais</span></div>
+        <div class="categoria-card" onclick="buscarCategoria('Quadriciclo / UTV')"><i class="ti ti-motorbike"></i><span>Quadriciclo / UTV</span></div>
+        <div class="categoria-card" onclick="buscarCategoria('Animal')" style="border-color:#b45309;"><i class="ti ti-meat" style="color:#b45309;"></i><span style="color:#b45309;">Animais</span></div>
       </div>
 
       <!-- Banner animais -->
@@ -1268,14 +1270,14 @@ function atualizarHeaderDeslogado(){
 function toggleMenuMobile(){document.getElementById('nav-main').classList.toggle('open');}
 function fecharMenuMobile(){document.getElementById('nav-main').classList.remove('open');}
 
-function goPage(p){
+function goPage(p, filtros=null){
   document.querySelectorAll('.page').forEach(e=>e.classList.remove('active'));
   document.querySelectorAll('.nav a').forEach(e=>e.classList.remove('active'));
   document.getElementById('page-'+p).classList.add('active');
   const n=document.getElementById('nav-'+p);if(n)n.classList.add('active');
   window.scrollTo({top:0,behavior:'smooth'});
   fecharMenuMobile();
-  if(p==='anuncios')carregarAnuncios();
+  if(p==='anuncios')carregarAnuncios(filtros||{});
   if(p==='painel')carregarPainel();
   if(p==='novo-anuncio')resetFormAnuncio();
   if(p==='admin')admNav('dashboard');
@@ -1373,13 +1375,12 @@ function onFiltroTipoChange(prefix){
 }
 
 function buscarCategoria(tipo){
-  goPage('anuncios');
-  // Atualiza o filtro de tipo na página de anúncios
+  const isA=tipo==='Animal';
   const sel=document.getElementById('f2-tipo');
   if(sel){sel.value=tipo;onFiltroTipoChange('f2');}
-  carregarAnuncios({tipo});
+  goPage('anuncios',{tipo});
 }
-function buscarAnuncios(){goPage('anuncios');const isA=document.getElementById('f-tipo').value==='Animal';carregarAnuncios({tipo:document.getElementById('f-tipo').value,marca:isA?'':document.getElementById('f-marca').value,modelo:isA?'':document.getElementById('f-modelo').value,raca:isA?document.getElementById('f-raca').value:'',classificacao:isA?document.getElementById('f-classificacao').value:'',cidade:document.getElementById('f-cidade').value,preco:document.getElementById('f-preco').value});}
+function buscarAnuncios(){const isA=document.getElementById('f-tipo').value==='Animal';goPage('anuncios',{tipo:document.getElementById('f-tipo').value,marca:isA?'':document.getElementById('f-marca').value,modelo:isA?'':document.getElementById('f-modelo').value,raca:isA?document.getElementById('f-raca').value:'',classificacao:isA?document.getElementById('f-classificacao').value:'',cidade:document.getElementById('f-cidade').value,preco:document.getElementById('f-preco').value});}
 function buscarAnuncios2(){const isA=document.getElementById('f2-tipo').value==='Animal';carregarAnuncios({tipo:document.getElementById('f2-tipo').value,marca:isA?'':document.getElementById('f2-marca').value,modelo:isA?'':document.getElementById('f2-modelo').value,raca:isA?document.getElementById('f2-raca').value:'',classificacao:isA?document.getElementById('f2-classificacao').value:'',cidade:document.getElementById('f2-cidade').value,preco:document.getElementById('f2-preco').value});}
 
 // ===== BUSCA DETALHADA =====
